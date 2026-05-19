@@ -26,9 +26,18 @@ export async function deleteFilter(id: string) {
   revalidatePath("/leads");
 }
 
-export async function createLead(input: unknown) {
+export async function createLead(input: any) {
   const user = await requirePermission("leads.create");
-  const data = leadSchema.parse(input);
+  
+  // Sanitize input: convert empty strings to undefined for Zod and Mongoose
+  const sanitizedInput = { ...input };
+  ["assignedTo", "courseId", "universityId", "pipelineId"].forEach(field => {
+    if (sanitizedInput[field] === "") {
+      delete sanitizedInput[field];
+    }
+  });
+
+  const data = leadSchema.parse(sanitizedInput);
   await connectDB();
   
   // Generate a simple Lead ID (e.g., LO-12345)
@@ -77,10 +86,20 @@ export async function updateLead(leadId: string, input: any) {
   const oldLead = await Lead.findById(leadId);
   if (!oldLead) throw new Error("Lead not found");
 
+  // Sanitize input: convert empty strings to null for ObjectId fields
+  const sanitizedInput = { ...input };
+  const objectIdFields = ["assignedTo", "courseId", "universityId", "pipelineId"];
+  
+  objectIdFields.forEach(field => {
+    if (sanitizedInput[field] === "") {
+      sanitizedInput[field] = null;
+    }
+  });
+
   await Lead.findByIdAndUpdate(
     leadId,
     { 
-      ...input,
+      ...sanitizedInput,
       $push: { 
         activities: { 
           type: "update", 

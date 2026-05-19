@@ -10,17 +10,24 @@ export type Role =
 
 export type LeadStatus =
   | "new"
-  | "attempted"
+  | "attempted_contact"
+  | "connected"
   | "interested"
   | "follow_up"
-  | "hot"
-  | "admission_processing"
+  | "qualified"
+  | "application_started"
   | "documents_pending"
   | "payment_pending"
-  | "admission_confirmed"
   | "converted"
-  | "closed"
-  | "not_interested";
+  | "not_interested"
+  | "hot"
+  | "warm"
+  | "cold"
+  | "callback"
+  | "counseling_scheduled"
+  | "duplicate"
+  | "spam"
+  | "rejected";
 
 export type LeadSource =
   | "website"

@@ -19,13 +19,24 @@ import { format } from "date-fns";
 
 const STATUS_OPTIONS = [
   { id: "new", name: "New Lead" },
+  { id: "attempted_contact", name: "Attempted Contact" },
+  { id: "connected", name: "Connected / Contacted" },
   { id: "interested", name: "Interested" },
-  { id: "not_interested", name: "Not Interested" },
-  { id: "follow_up", name: "Follow-up" },
-  { id: "callback", name: "Callback" },
-  { id: "converted", name: "Converted" },
-  { id: "closed", name: "Closed" },
-  { id: "admission_done", name: "Admission Done" },
+  { id: "follow_up", name: "Follow-Up" },
+  { id: "qualified", name: "Qualified Lead" },
+  { id: "application_started", name: "Application Started" },
+  { id: "documents_pending", name: "Documents Pending" },
+  { id: "payment_pending", name: "Payment Pending" },
+  { id: "converted", name: "Admission Done / Converted" },
+  { id: "not_interested", name: "Closed Lost / Not Interested" },
+  { id: "hot", name: "Hot Lead" },
+  { id: "warm", name: "Warm Lead" },
+  { id: "cold", name: "Cold Lead" },
+  { id: "callback", name: "Callback Requested" },
+  { id: "counseling_scheduled", name: "Counseling Scheduled" },
+  { id: "duplicate", name: "Duplicate Lead" },
+  { id: "spam", name: "Spam Lead" },
+  { id: "rejected", name: "Rejected" },
 ];
 
 interface LeadListTableProps {
@@ -53,6 +64,7 @@ export function LeadListTable({
   
   const [popoverLead, setPopoverLead] = useState<any>(null);
   const [popoverPos, setPopoverPos] = useState({ x: 0, y: 0 });
+  const [modalPos, setModalPos] = useState<{ x: number; y: number } | undefined>(undefined);
   const [popoverTab, setPopoverTab] = useState<"details" | "history">("details");
   const [remark, setRemark] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -73,8 +85,10 @@ export function LeadListTable({
 
   const handleNameClick = (e: React.MouseEvent, lead: any) => {
     e.stopPropagation();
+    const pos = { x: e.clientX, y: e.clientY };
     setPopoverLead(lead);
-    setPopoverPos({ x: e.clientX, y: e.clientY });
+    setPopoverPos(pos);
+    setModalPos(pos);
     setPopoverTab("details");
     setRemark("");
   };
@@ -166,21 +180,22 @@ export function LeadListTable({
         </div>
       )}
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+      <div className="w-full overflow-hidden">
+        <table className="w-full text-xs table-auto border-collapse">
           <thead>
-            <tr className="border-b border-slate-100 bg-slate-50/50 text-left font-bold text-slate-500 uppercase tracking-tighter">
-              <th className="px-6 py-4 w-12">
-                <button onClick={toggleSelectAll} className="text-slate-400 hover:text-primary transition-colors">
-                  {selectedIds.length === leads.length && leads.length > 0 ? <CheckSquare className="h-5 w-5 text-primary" /> : <Square className="h-5 w-5" />}
+            <tr className="border-b border-slate-200 bg-slate-50 text-left font-black text-slate-950 uppercase tracking-tighter">
+              <th className="px-2 py-3 w-8">
+                <button onClick={toggleSelectAll} className="text-slate-500 hover:text-primary transition-colors">
+                  {selectedIds.length === leads.length && leads.length > 0 ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4" />}
                 </button>
               </th>
-              <th className="px-6 py-4 w-12">#</th>
-              <th className="px-6 py-4">Lead Info</th>
-              <th className="px-6 py-4">Contact Details</th>
-              <th className="px-6 py-4">Status & Score</th>
-              <th className="px-6 py-4">Assigned To</th>
-              <th className="px-6 py-4 text-right">Actions</th>
+              <th className="px-2 py-3 w-8">#</th>
+              <th className="px-3 py-3 min-w-[140px]">Lead Info</th>
+              <th className="px-3 py-3 min-w-[140px]">University & Course</th>
+              <th className="px-3 py-3 min-w-[130px]">Contact</th>
+              <th className="px-3 py-3 min-w-[120px]">Status & Score</th>
+              <th className="px-3 py-3 min-w-[100px]">Assigned</th>
+              <th className="px-3 py-3 text-right w-20">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -190,95 +205,96 @@ export function LeadListTable({
                 className={`hover:bg-slate-50/80 transition-colors group cursor-pointer ${selectedIds.includes(l._id.toString()) ? 'bg-primary/5' : ''}`}
                 onClick={(e) => handleNameClick(e, l)}
               >
-                <td className="px-6 py-4" onClick={(e) => { e.stopPropagation(); toggleSelect(l._id.toString()); }}>
-                  <button className="text-slate-300 hover:text-primary transition-colors">
-                    {selectedIds.includes(l._id.toString()) ? <CheckSquare className="h-5 w-5 text-primary" /> : <Square className="h-5 w-5" />}
+                <td className="px-2 py-3" onClick={(e) => { e.stopPropagation(); toggleSelect(l._id.toString()); }}>
+                  <button className="text-slate-400 hover:text-primary transition-colors">
+                    {selectedIds.includes(l._id.toString()) ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4" />}
                   </button>
                 </td>
-                <td className="px-6 py-4 font-bold text-slate-400">
+                <td className="px-2 py-3 font-bold text-slate-950">
                   {index + 1}
                 </td>
-                <td className="px-6 py-4">
-                  <div className="flex items-center gap-3">
-                    <div>
-                      <div 
-                        className="font-bold text-slate-900 group-hover:text-primary transition-colors flex items-center gap-2 cursor-pointer"
-                        onClick={(e) => handleNameClick(e, l)}
-                      >
-                        {l.name}
-                        <Eye className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
-                      </div>
-                      <div className="flex flex-col gap-1 mt-1">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{l.source}</span>
-                          {l.temperature && (
-                            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                              l.temperature === 'hot' ? 'bg-red-100 text-red-600' :
-                              l.temperature === 'warm' ? 'bg-orange-100 text-orange-600' :
-                              'bg-blue-100 text-blue-600'
-                            }`}>
-                              {l.temperature}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex flex-wrap gap-1">
-                          {l.universityId && (
-                            <span className="text-[9px] font-bold bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded flex items-center gap-1">
-                              <Building2 className="h-2.5 w-2.5" /> {l.universityId.name}
-                            </span>
-                          )}
-                          {l.courseId && (
-                            <span className="text-[9px] font-bold bg-primary/5 text-primary px-1.5 py-0.5 rounded flex items-center gap-1">
-                              <GraduationCap className="h-2.5 w-2.5" /> {l.courseId.name}
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                <td className="px-3 py-3">
+                  <div className="flex flex-col gap-0.5">
+                    <div className="font-black text-slate-950 group-hover:text-primary transition-colors flex items-center gap-1.5 leading-tight">
+                      {l.name}
+                      <Eye className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{l.source}</span>
+                      {l.temperature && (
+                        <span className={`text-[9px] font-black px-1 py-0 rounded ${
+                          l.temperature === 'hot' ? 'bg-red-100 text-red-700' :
+                          l.temperature === 'warm' ? 'bg-orange-100 text-orange-700' :
+                          'bg-blue-100 text-blue-700'
+                        }`}>
+                          {l.temperature}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-slate-600 font-medium">
-                      <Phone className="h-3.5 w-3.5" /> {l.phone}
+                <td className="px-3 py-3">
+                  <div className="flex flex-col gap-1">
+                    {l.universityId ? (
+                      <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-950 bg-slate-100 px-1.5 py-0.5 rounded leading-tight">
+                        <Building2 className="h-2.5 w-2.5 text-slate-500" />
+                        <span className="truncate">{l.universityId.name}</span>
+                      </div>
+                    ) : (
+                      <span className="text-[9px] text-slate-500 italic">No University</span>
+                    )}
+                    {l.courseId ? (
+                      <div className="flex items-center gap-1.5 text-[10px] font-black text-primary bg-primary/5 px-1.5 py-0.5 rounded leading-tight">
+                        <GraduationCap className="h-2.5 w-2.5" />
+                        <span className="truncate">{l.courseId.name}</span>
+                      </div>
+                    ) : (
+                      <span className="text-[9px] text-slate-500 italic">No Course</span>
+                    )}
+                  </div>
+                </td>
+                <td className="px-3 py-3">
+                  <div className="flex flex-col gap-0.5">
+                    <div className="flex items-center gap-1.5 text-slate-950 font-black leading-tight">
+                      <Phone className="h-3 w-3 text-slate-500" /> {l.phone}
                     </div>
-                    <div className="flex items-center gap-2 text-slate-400 text-xs">
-                      <Mail className="h-3.5 w-3.5" /> {l.email || "No email"}
+                    <div className="flex items-center gap-1.5 text-slate-600 text-[10px] font-bold leading-tight">
+                      <Mail className="h-3 w-3 text-slate-400" /> <span className="truncate max-w-[120px]">{l.email || "No email"}</span>
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4">
-                  <div className="space-y-2">
-                    <Badge variant="secondary" className={`capitalize font-bold ${
-                      l.temperature === 'hot' ? 'bg-red-50 text-red-600 border-red-100' :
-                      l.status === 'converted' ? 'bg-green-50 text-green-600 border-green-100' :
-                      l.status === 'interested' ? 'bg-blue-50 text-blue-600 border-blue-100' :
-                      'bg-slate-50 text-slate-600 border-slate-100'
+                <td className="px-3 py-3">
+                  <div className="flex flex-col gap-1.5">
+                    <Badge variant="secondary" className={`capitalize font-black text-[9px] w-fit px-1.5 py-0 border-none ${
+                      l.temperature === 'hot' ? 'bg-red-50 text-red-700' :
+                      l.status === 'converted' ? 'bg-green-50 text-green-700' :
+                      l.status === 'interested' ? 'bg-blue-50 text-blue-700' :
+                      'bg-slate-100 text-slate-800'
                     }`}>
                       {l.status.replace('_', ' ')}
                     </Badge>
-                    <div className="w-full bg-slate-100 h-1 rounded-full overflow-hidden">
-                      <div className={`h-full ${l.score > 70 ? 'bg-green-500' : l.score > 40 ? 'bg-orange-500' : 'bg-red-500'}`} style={{ width: `${l.score}%` }} />
+                    <div className="w-full bg-slate-200 h-1 rounded-full overflow-hidden">
+                      <div className={`h-full ${l.score > 70 ? 'bg-green-600' : l.score > 40 ? 'bg-orange-600' : 'bg-red-600'}`} style={{ width: `${l.score}%` }} />
                     </div>
                   </div>
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-3 py-3">
                   {l.assignedTo ? (
-                    <div className="flex items-center gap-2">
-                      <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
+                    <div className="flex items-center gap-1.5">
+                      <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[9px] font-black text-primary shrink-0">
                         {l.assignedTo.name.charAt(0)}
                       </div>
-                      <span className="font-medium text-slate-700">{l.assignedTo.name}</span>
+                      <span className="font-black text-slate-950 truncate max-w-[80px]">{l.assignedTo.name}</span>
                     </div>
                   ) : (
-                    <span className="text-slate-400 italic text-xs">Not Assigned</span>
+                    <span className="text-slate-500 italic text-[10px]">Unassigned</span>
                   )}
                 </td>
-                <td className="px-6 py-4" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex items-center justify-end gap-2">
-                    <Button variant="ghost" size="icon" asChild className="h-9 w-9 rounded-full text-slate-400 hover:text-primary hover:bg-primary/5">
+                <td className="px-3 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                  <div className="flex items-center justify-end gap-1">
+                    <Button variant="ghost" size="icon" asChild className="h-7 w-7 rounded-full text-slate-500 hover:text-primary hover:bg-primary/5">
                       <a href={`tel:${l.phone}`} title="Call Lead">
-                        <Phone className="h-4 w-4" />
+                        <Phone className="h-3.5 w-3.5" />
                       </a>
                     </Button>
                     {isGM && (
@@ -313,7 +329,11 @@ export function LeadListTable({
           pipelines={pipelines}
           courses={courses}
           universities={universities}
-          onClose={() => setSelectedLead(null)}
+          onClose={() => {
+            setSelectedLead(null);
+            setModalPos(undefined);
+          }}
+          clickPos={modalPos}
         />
       )}
 
@@ -333,14 +353,14 @@ export function LeadListTable({
             className="bg-white rounded-[2rem] shadow-2xl border border-slate-100 w-[400px] max-h-[500px] flex flex-col overflow-hidden"
           >
             {/* Popover Header */}
-            <div className="p-5 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between">
+            <div className="p-5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary font-bold">
+                <div className="h-10 w-10 rounded-xl bg-primary text-white flex items-center justify-center font-black">
                   {popoverLead.name.charAt(0)}
                 </div>
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">{popoverLead.name}</h4>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{popoverLead.leadId}</p>
+                  <h4 className="font-black text-slate-950 text-sm">{popoverLead.name}</h4>
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{popoverLead.leadId}</p>
                 </div>
               </div>
               <button 

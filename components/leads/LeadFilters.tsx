@@ -30,13 +30,24 @@ interface LeadFiltersProps {
 
 const STATUS_OPTIONS = [
   { id: "new", name: "New Lead" },
+  { id: "attempted_contact", name: "Attempted Contact" },
+  { id: "connected", name: "Connected / Contacted" },
   { id: "interested", name: "Interested" },
-  { id: "not_interested", name: "Not Interested" },
-  { id: "follow_up", name: "Follow-up" },
-  { id: "callback", name: "Callback" },
-  { id: "converted", name: "Converted" },
-  { id: "closed", name: "Closed" },
-  { id: "admission_done", name: "Admission Done" },
+  { id: "follow_up", name: "Follow-Up" },
+  { id: "qualified", name: "Qualified Lead" },
+  { id: "application_started", name: "Application Started" },
+  { id: "documents_pending", name: "Documents Pending" },
+  { id: "payment_pending", name: "Payment Pending" },
+  { id: "converted", name: "Admission Done / Converted" },
+  { id: "not_interested", name: "Closed Lost / Not Interested" },
+  { id: "hot", name: "Hot Lead" },
+  { id: "warm", name: "Warm Lead" },
+  { id: "cold", name: "Cold Lead" },
+  { id: "callback", name: "Callback Requested" },
+  { id: "counseling_scheduled", name: "Counseling Scheduled" },
+  { id: "duplicate", name: "Duplicate Lead" },
+  { id: "spam", name: "Spam Lead" },
+  { id: "rejected", name: "Rejected" },
 ];
 
 const SOURCE_OPTIONS = [
@@ -257,7 +268,7 @@ export function LeadFilters({
                       applyFilters(filters);
                     }
                   }}
-                  placeholder="Search by Name, Phone, Email, or Lead ID... (Press Enter to search)" 
+                  placeholder="Search by Name, Phone, Email, University, Course, or ID... (Press Enter)" 
                   className="pl-12 h-14 bg-slate-50/50 border-slate-100 rounded-2xl focus:ring-4 focus:ring-primary/10 transition-all text-lg" 
                 />
               </div>

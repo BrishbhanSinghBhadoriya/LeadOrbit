@@ -62,9 +62,15 @@ export async function POST(req: Request) {
   const payload = { sub: String(user._id), email: user.email, role: user.role as Role, name: user.name };
   const access = signAccess(payload);
   const refresh = signRefresh(payload);
-  user.lastLoginAt = new Date();
-  user.refreshTokens = [...(user.refreshTokens ?? []).slice(-4), refresh];
-  await user.save();
+  
+  // Faster update using findOneAndUpdate
+  await User.findOneAndUpdate(
+    { _id: user._id },
+    { 
+      $set: { lastLoginAt: new Date() },
+      $push: { refreshTokens: { $each: [refresh], $slice: -5 } }
+    }
+  );
 
   const res = NextResponse.json({
     user: { id: user._id, name: user.name, email: user.email, role: user.role },

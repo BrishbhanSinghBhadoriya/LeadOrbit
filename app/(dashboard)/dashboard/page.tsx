@@ -39,14 +39,27 @@ async function getStats(userId: string, role: string) {
       .limit(10)
   ]);
 
-  const revenueAgg = await Lead.aggregate([
-    { $match: { ...scope, status: "converted" } },
-    { $group: { _id: null, sum: { $sum: "$revenue" } } },
+  const [revenueAgg, statusData, sourceData] = await Promise.all([
+    Lead.aggregate([
+      { $match: { ...scope, status: "converted" } },
+      { $group: { _id: null, sum: { $sum: "$revenue" } } },
+    ]),
+    Lead.aggregate([
+      { $match: scope },
+      { $group: { _id: "$status", value: { $sum: 1 } } }
+    ]),
+    Lead.aggregate([
+      { $match: scope },
+      { $group: { _id: "$source", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 5 }
+    ])
   ]);
+
   const revenue = revenueAgg[0]?.sum ?? 0;
 
-  // Data for Charts
-  const last7Days = [];
+  // Data for Charts - Fetching in parallel
+  const chartPromises = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
@@ -54,22 +67,16 @@ async function getStats(userId: string, role: string) {
     const end = new Date(d);
     end.setHours(23, 59, 59, 999);
     
-    const count = await Lead.countDocuments({ ...scope, createdAt: { $gte: d, $lte: end } });
-    last7Days.push({ day: d.toLocaleDateString("en-US", { weekday: "short" }), count });
+    chartPromises.push(
+      Lead.countDocuments({ ...scope, createdAt: { $gte: d, $lte: end } }).then(count => ({
+        day: d.toLocaleDateString("en-US", { weekday: "short" }),
+        count
+      }))
+    );
   }
+  const last7Days = await Promise.all(chartPromises);
 
-  const statusData = await Lead.aggregate([
-    { $match: scope },
-    { $group: { _id: "$status", value: { $sum: 1 } } }
-  ]);
   const leadsByStatus = statusData.map(s => ({ name: s._id, value: s.value }));
-
-  const sourceData = await Lead.aggregate([
-    { $match: scope },
-    { $group: { _id: "$source", count: { $sum: 1 } } },
-    { $sort: { count: -1 } },
-    { $limit: 5 }
-  ]);
   const leadsBySource = sourceData.map(s => ({ name: s._id, count: s.count }));
 
   return { 

@@ -128,11 +128,22 @@ export default async function LeadsPage({
 
   // Search
   if (q) {
+    // Find matching courses and universities first to search by their IDs
+    const [matchedCourses, matchedUniversities] = await Promise.all([
+      Course.find({ name: { $regex: q, $options: "i" } }).select("_id"),
+      University.find({ name: { $regex: q, $options: "i" } }).select("_id"),
+    ]);
+
+    const courseIds = matchedCourses.map(c => c._id);
+    const universityIds = matchedUniversities.map(u => u._id);
+
     query.$or = [
       { name: { $regex: q, $options: "i" } },
       { phone: { $regex: q, $options: "i" } },
       { email: { $regex: q, $options: "i" } },
       { leadId: q },
+      { courseId: { $in: courseIds } },
+      { universityId: { $in: universityIds } },
     ];
   }
 
@@ -147,30 +158,29 @@ export default async function LeadsPage({
     }
   }
 
-  const leads = await Lead.find(query)
-    .sort({ createdAt: -1 })
-    .populate("assignedTo", "name")
-    .populate("courseId", "name")
-    .populate("universityId", "name")
-    .populate("activities.by", "name")
-    .limit(100);
+  const [leads, teamMembers, pipelines, allCourses, universities, savedFilters] = await Promise.all([
+    Lead.find(query)
+      .sort({ createdAt: -1 })
+      .populate("assignedTo", "name")
+      .populate("courseId", "name")
+      .populate("universityId", "name")
+      .populate("activities.by", "name")
+      .limit(100),
+    User.find({ 
+      role: { $in: ["counselor", "team_leader", "manager", "admin"] } 
+    }).select("name role"),
+    Pipeline.find({ active: true }).select("name"),
+    Course.find().select("name"),
+    University.find().select("name"),
+    SavedFilter.find({ userId: user.sub, type: "lead" }).sort({ createdAt: -1 })
+  ]);
 
-  const teamMembers = await User.find({ 
-    role: { $in: ["counselor", "team_leader", "manager", "admin"] } 
-  }).select("name role");
-
-  const pipelines = await Pipeline.find({ active: true }).select("name");
-  const allCourses = await Course.find().select("name");
-  
   // Courses for Form (with IDs)
   const coursesForForm = allCourses.map(c => ({ id: c._id.toString(), name: c.name }));
-  
+
   // Unique Courses for Filter (by Name)
   const uniqueCourseNames = Array.from(new Set(allCourses.map(c => c.name)));
   const coursesForFilter = uniqueCourseNames.map(name => ({ id: name, name }));
-  
-  const universities = await University.find().select("name");
-  const savedFilters = await SavedFilter.find({ userId: user.sub, type: "lead" }).sort({ createdAt: -1 });
 
   const isGM = ["super_admin", "general_manager", "admin"].includes(user.role);
 

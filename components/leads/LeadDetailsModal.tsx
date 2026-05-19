@@ -22,17 +22,29 @@ interface LeadDetailsModalProps {
   courses: { id: string; name: string }[];
   universities: { id: string; name: string }[];
   onClose: () => void;
+  clickPos?: { x: number; y: number };
 }
 
 const STATUS_OPTIONS = [
   { id: "new", name: "New Lead" },
+  { id: "attempted_contact", name: "Attempted Contact" },
+  { id: "connected", name: "Connected / Contacted" },
   { id: "interested", name: "Interested" },
-  { id: "not_interested", name: "Not Interested" },
-  { id: "follow_up", name: "Follow-up" },
-  { id: "callback", name: "Callback" },
-  { id: "converted", name: "Converted" },
-  { id: "closed", name: "Closed" },
-  { id: "admission_done", name: "Admission Done" },
+  { id: "follow_up", name: "Follow-Up" },
+  { id: "qualified", name: "Qualified Lead" },
+  { id: "application_started", name: "Application Started" },
+  { id: "documents_pending", name: "Documents Pending" },
+  { id: "payment_pending", name: "Payment Pending" },
+  { id: "converted", name: "Admission Done / Converted" },
+  { id: "not_interested", name: "Closed Lost / Not Interested" },
+  { id: "hot", name: "Hot Lead" },
+  { id: "warm", name: "Warm Lead" },
+  { id: "cold", name: "Cold Lead" },
+  { id: "callback", name: "Callback Requested" },
+  { id: "counseling_scheduled", name: "Counseling Scheduled" },
+  { id: "duplicate", name: "Duplicate Lead" },
+  { id: "spam", name: "Spam Lead" },
+  { id: "rejected", name: "Rejected" },
 ];
 
 const SOURCE_OPTIONS = [
@@ -67,6 +79,7 @@ export function LeadDetailsModal({
   courses,
   universities,
   onClose,
+  clickPos,
 }: LeadDetailsModalProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -125,12 +138,21 @@ export function LeadDetailsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-md animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
       <div 
         className="fixed inset-0" 
         onClick={onClose} 
       />
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-50 shadow-2xl rounded-[2.5rem] overflow-hidden flex flex-col animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 border border-white/20">
+      <div 
+        style={clickPos ? {
+          position: 'fixed',
+          top: typeof window !== 'undefined' ? Math.max(20, Math.min(clickPos.y - 200, window.innerHeight - 700)) : '50%',
+          left: typeof window !== 'undefined' ? Math.max(20, Math.min(clickPos.x - 450, window.innerWidth - 900)) : '50%',
+          transform: clickPos ? 'none' : 'translate(-50%, -50%)',
+          margin: 0
+        } : {}}
+        className={`relative w-full max-w-4xl max-h-[90vh] bg-slate-50 shadow-2xl rounded-[2.5rem] overflow-hidden flex flex-col animate-in zoom-in-95 ${clickPos ? 'fade-in duration-300' : 'slide-in-from-top-10 duration-500'} border border-white/20`}
+      >
         {/* Header */}
         <div className="bg-white/80 backdrop-blur-xl border-b border-slate-100 p-6 sm:p-8 flex items-center justify-between">
           <div className="flex items-center gap-4 sm:gap-6">

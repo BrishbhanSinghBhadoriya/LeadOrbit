@@ -2,13 +2,24 @@ import { Schema, model, models, type InferSchemaType, type Model } from "mongoos
 
 const LEAD_STATUS = [
   "new",
+  "attempted_contact",
+  "connected",
   "interested",
-  "not_interested",
   "follow_up",
-  "callback",
+  "qualified",
+  "application_started",
+  "documents_pending",
+  "payment_pending",
   "converted",
-  "closed",
-  "admission_done",
+  "not_interested",
+  "hot",
+  "warm",
+  "cold",
+  "callback",
+  "counseling_scheduled",
+  "duplicate",
+  "spam",
+  "rejected",
 ] as const;
 
 const LEAD_SOURCE = [
