@@ -180,8 +180,8 @@ export function LeadListTable({
         </div>
       )}
 
-      <div className="w-full overflow-hidden">
-        <table className="w-full text-xs table-auto border-collapse">
+      <div className="w-full overflow-x-auto custom-scrollbar">
+        <table className="w-full text-[10px] table-auto border-collapse min-w-[1200px]">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50 text-left font-black text-slate-950 uppercase tracking-tighter">
               <th className="px-2 py-3 w-8">
@@ -189,13 +189,18 @@ export function LeadListTable({
                   {selectedIds.length === leads.length && leads.length > 0 ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4" />}
                 </button>
               </th>
-              <th className="px-2 py-3 w-8">#</th>
-              <th className="px-3 py-3 min-w-[140px]">Lead Info</th>
-              <th className="px-3 py-3 min-w-[140px]">University & Course</th>
-              <th className="px-3 py-3 min-w-[130px]">Contact</th>
-              <th className="px-3 py-3 min-w-[120px]">Status & Score</th>
-              <th className="px-3 py-3 min-w-[100px]">Assigned</th>
-              <th className="px-3 py-3 text-right w-20">Actions</th>
+              <th className="px-2 py-3 w-8 text-center">NO</th>
+              <th className="px-3 py-3 min-w-[120px]">Name</th>
+              <th className="px-3 py-3 min-w-[120px]">Email</th>
+              <th className="px-3 py-3 w-20">Source</th>
+              <th className="px-3 py-3 min-w-[120px]">University</th>
+              <th className="px-3 py-3 min-w-[120px]">Course</th>
+              <th className="px-3 py-3 w-24">Created Date</th>
+              <th className="px-3 py-3 w-24">Owner</th>
+              <th className="px-3 py-3 min-w-[150px]">Last Activity</th>
+              <th className="px-3 py-3 w-24">Disposition</th>
+              <th className="px-3 py-3 w-32">Sub Disposition</th>
+              <th className="px-3 py-3 text-right w-16">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -210,95 +215,81 @@ export function LeadListTable({
                     {selectedIds.includes(l._id.toString()) ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4" />}
                   </button>
                 </td>
-                <td className="px-2 py-3 font-normal text-black">
+                <td className="px-2 py-3 text-center font-bold text-slate-900">
                   {index + 1}
                 </td>
                 <td className="px-3 py-3">
-                  <div className="flex flex-col gap-0.5">
-                    <div 
-                      className="font-normal text-black group-hover:text-primary transition-colors flex items-center gap-1.5 leading-tight cursor-pointer hover:underline"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        window.open(`/leads/${l._id}`, '_blank');
-                      }}
-                    >
-                      {l.name}
-                      <Eye className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-[9px] font-normal text-black uppercase tracking-widest">{l.source}</span>
-                      {l.temperature && (
-                        <span className={`text-[9px] font-normal px-1 py-0 rounded ${
-                          l.temperature === 'hot' ? 'bg-red-100 text-red-700' :
-                          l.temperature === 'warm' ? 'bg-orange-100 text-orange-700' :
-                          'bg-blue-100 text-blue-700'
-                        }`}>
-                          {l.temperature}
-                        </span>
-                      )}
-                    </div>
+                  <div 
+                    className="font-bold text-slate-900 group-hover:text-primary transition-colors flex items-center gap-1 leading-tight cursor-pointer hover:underline"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.open(`/leads/${l._id}`, '_blank');
+                    }}
+                  >
+                    {l.name}
+                    <Eye className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
                   </div>
                 </td>
                 <td className="px-3 py-3">
-                  <div className="flex flex-col gap-1">
-                    {l.universityId ? (
-                      <div className="flex items-center gap-1.5 text-[10px] font-normal text-black bg-slate-100 px-1.5 py-0.5 rounded leading-tight">
-                        <Building2 className="h-2.5 w-2.5 text-black" />
-                        <span className="truncate">{l.universityId.name}</span>
-                      </div>
-                    ) : (
-                      <span className="text-[9px] text-black italic">No University</span>
-                    )}
-                    {l.courseId ? (
-                      <div className="flex items-center gap-1.5 text-[10px] font-normal text-primary bg-primary/5 px-1.5 py-0.5 rounded leading-tight">
-                        <GraduationCap className="h-2.5 w-2.5" />
-                        <span className="truncate">{l.courseId.name}</span>
-                      </div>
-                    ) : (
-                      <span className="text-[9px] text-black italic">No Course</span>
-                    )}
+                  <div className="flex items-center gap-1 text-slate-600 font-medium truncate max-w-[120px]">
+                    <Mail className="h-3 w-3 shrink-0" /> {l.email || "N/A"}
                   </div>
                 </td>
                 <td className="px-3 py-3">
-                  <div className="flex flex-col gap-0.5">
-                    <div className="flex items-center gap-1.5 text-black font-normal leading-tight">
-                      <Phone className="h-3 w-3 text-black" /> {l.phone}
-                    </div>
-                    <div className="flex items-center gap-1.5 text-black text-[10px] font-normal leading-tight">
-                      <Mail className="h-3 w-3 text-black" /> <span className="truncate max-w-[120px]">{l.email || "No email"}</span>
-                    </div>
+                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest bg-slate-100 px-1.5 py-0.5 rounded">{l.source}</span>
+                </td>
+                <td className="px-3 py-3">
+                  <div className="flex items-center gap-1 text-slate-700 font-medium truncate max-w-[120px]">
+                    <Building2 className="h-3 w-3 text-slate-400 shrink-0" /> {l.universityId?.name || "N/A"}
                   </div>
                 </td>
                 <td className="px-3 py-3">
-                  <div className="flex flex-col gap-1.5">
-                    <Badge variant="secondary" className={`capitalize font-normal text-[9px] w-fit px-1.5 py-0 border-none ${
-                      l.temperature === 'hot' ? 'bg-red-50 text-red-700' :
-                      l.status === 'converted' ? 'bg-green-50 text-green-700' :
-                      l.status === 'interested' ? 'bg-blue-50 text-blue-700' :
-                      'bg-slate-100 text-black'
-                    }`}>
-                      {l.status.replace('_', ' ')}
-                    </Badge>
-                    <div className="w-full bg-slate-200 h-1 rounded-full overflow-hidden">
-                      <div className={`h-full ${l.score > 70 ? 'bg-green-600' : l.score > 40 ? 'bg-orange-600' : 'bg-red-600'}`} style={{ width: `${l.score}%` }} />
-                    </div>
+                  <div className="flex items-center gap-1 text-primary font-bold truncate max-w-[120px]">
+                    <GraduationCap className="h-3 w-3 shrink-0" /> {l.courseId?.name || "N/A"}
                   </div>
+                </td>
+                <td className="px-3 py-3 text-slate-500 font-bold whitespace-nowrap">
+                  {format(new Date(l.createdAt), "dd MMM yyyy")}
                 </td>
                 <td className="px-3 py-3">
                   {l.assignedTo ? (
                     <div className="flex items-center gap-1.5">
-                      <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[9px] font-normal text-primary shrink-0">
+                      <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[8px] font-bold text-primary shrink-0">
                         {l.assignedTo.name.charAt(0)}
                       </div>
-                      <span className="font-normal text-black truncate max-w-[80px]">{l.assignedTo.name}</span>
+                      <span className="font-bold text-slate-700 truncate max-w-[80px]">{l.assignedTo.name}</span>
                     </div>
                   ) : (
-                    <span className="text-black italic text-[10px]">Unassigned</span>
+                    <span className="text-slate-400 italic">Unassigned</span>
                   )}
+                </td>
+                <td className="px-3 py-3">
+                  <div className="flex items-center gap-1.5 text-slate-600 max-w-[180px]">
+                    <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                    <span className="truncate">{l.activities && l.activities.length > 0 ? l.activities[l.activities.length - 1].message : "Lead Created"}</span>
+                  </div>
+                </td>
+                <td className="px-3 py-3">
+                  <Badge variant="outline" className={`text-[9px] font-bold uppercase border-none px-1.5 py-0 ${l.disposition ? 'bg-blue-50 text-blue-700' : 'bg-slate-100 text-slate-500'}`}>
+                    {l.disposition || "N/A"}
+                  </Badge>
+                </td>
+                <td className="px-3 py-3">
+                  <span className="text-[9px] font-medium text-slate-600 truncate max-w-[120px] block">
+                    {l.subDisposition || "N/A"}
+                  </span>
                 </td>
                 <td className="px-3 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center justify-end gap-1">
-                    <Button variant="ghost" size="icon" asChild className="h-7 w-7 rounded-full text-slate-500 hover:text-primary hover:bg-primary/5">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-7 w-7 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/5"
+                      onClick={() => window.open(`/leads/${l._id}`, '_blank')}
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button variant="ghost" size="icon" asChild className="h-7 w-7 rounded-full text-slate-400 hover:text-primary hover:bg-primary/5">
                       <a href={`tel:${l.phone}`} title="Call Lead">
                         <Phone className="h-3.5 w-3.5" />
                       </a>
@@ -316,7 +307,7 @@ export function LeadListTable({
             ))}
             {leads.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-slate-400">
+                <td colSpan={13} className="px-6 py-12 text-center text-slate-400">
                   <div className="flex flex-col items-center gap-2">
                     <Search className="h-10 w-10 opacity-20" />
                     <p>No leads found. Try adjusting your filters or import some data.</p>

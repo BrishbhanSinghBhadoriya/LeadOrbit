@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { GraduationCap, Lock, Mail, Loader2 } from "lucide-react";
+import { Lock, Mail, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,8 +43,14 @@ export default function LoginPage() {
       <div className="w-full max-w-md space-y-8 bg-white p-8 rounded-xl shadow-lg border border-border">
         <div className="text-center">
           <div className="flex justify-center">
-            <div className="bg-primary/10 p-3 rounded-full">
-              <GraduationCap className="h-10 w-10 text-primary" />
+            <div className="bg-primary/5 p-4 rounded-3xl">
+              <Image 
+                src="/favicon-32x32.png" 
+                alt="Logo" 
+                width={48} 
+                height={48} 
+                className="w-12 h-12 object-contain"
+              />
             </div>
           </div>
           <h2 className="mt-6 text-3xl font-extrabold text-foreground">

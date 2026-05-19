@@ -160,13 +160,15 @@ export default async function DashboardPage() {
         </div>
         <div className="flex flex-wrap gap-3">
           <Button asChild className="rounded-full shadow-lg shadow-primary/20 hover:shadow-xl transition-all">
-            <Link href="/leads?action=new">
-              <Plus className="mr-2 h-4 w-4" /> Add New Lead
+            <Link href="/leads?action=new" className="flex items-center">
+              <Plus className="mr-2 h-4 w-4 shrink-0" /> 
+              <span>Add New Lead</span>
             </Link>
           </Button>
           <Button variant="outline" asChild className="rounded-full bg-white">
-            <Link href="/followups">
-              <Clock className="mr-2 h-4 w-4" /> View Follow-ups
+            <Link href="/followups" className="flex items-center">
+              <Clock className="mr-2 h-4 w-4 shrink-0" /> 
+              <span>View Follow-ups</span>
             </Link>
           </Button>
         </div>
