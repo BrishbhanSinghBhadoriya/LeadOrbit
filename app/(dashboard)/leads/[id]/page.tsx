@@ -13,9 +13,10 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { format } from "date-fns";
 
-export default async function LeadDetailPage({ params }: { params: { id: string } }) {
+export default async function LeadDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await connectDB();
-  const lead = (await Lead.findById(params.id)
+  const lead = (await Lead.findById(id)
     .populate("assignedTo", "name")
     .populate("courseId", "name")
     .populate("universityId", "name")
@@ -113,7 +114,7 @@ export default async function LeadDetailPage({ params }: { params: { id: string 
         {/* Middle Column: Call Disposition */}
         <div className="lg:col-span-5 space-y-6">
           <div className="w-full">
-            <CallDisposition leadId={params.id} />
+            <CallDisposition leadId={id} />
           </div>
           
           {/* Recent Call Logs */}
