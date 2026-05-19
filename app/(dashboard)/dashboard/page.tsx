@@ -1,8 +1,9 @@
 import { connectDB } from "@/lib/db";
-import { Lead, User, FollowUp } from "@/models";
+import { Lead, User, FollowUp, Pipeline, Course, University } from "@/models";
 import { requireUser } from "@/lib/auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { DashboardCharts } from "@/components/dashboard/DashboardCharts";
+import { RecentLeadsList } from "@/components/dashboard/RecentLeadsList";
 import { Users, TrendingUp, UserCheck, Flame, Calendar, Plus, Clock, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -32,11 +33,10 @@ async function getStats(userId: string, role: string) {
     Lead.countDocuments({ ...scope, createdAt: { $gte: today } }),
     Lead.countDocuments({ ...scope, status: "converted" }),
     Lead.countDocuments({ ...scope, status: "hot" }),
-    Lead.find(scope).sort({ createdAt: -1 }).limit(5).select("name email status createdAt"),
-    FollowUp.find({ ...scope, scheduledAt: { $gte: today, $lt: tomorrow }, status: "pending" })
-      .populate("leadId", "name email")
-      .sort({ scheduledAt: 1 })
-      .limit(5)
+    Lead.find(scope).sort({ createdAt: -1 }).limit(5).populate("assignedTo courseId universityId"),
+    Lead.find({ ...scope, followUpAt: { $gte: today, $lt: tomorrow } })
+      .sort({ followUpAt: 1 })
+      .limit(10)
   ]);
 
   const revenueAgg = await Lead.aggregate([
@@ -82,6 +82,13 @@ async function getStats(userId: string, role: string) {
 export default async function DashboardPage() {
   const user = await requireUser();
   const stats = await getStats(user.sub, user.role);
+
+  const teamMembers = await User.find({ 
+    role: { $in: ["counselor", "team_leader", "manager", "admin"] } 
+  }).select("name role");
+  const pipelines = await Pipeline.find({ active: true }).select("name");
+  const courses = await Course.find().select("name");
+  const universities = await University.find().select("name");
 
   const statCards = [
     { 
@@ -205,28 +212,13 @@ export default async function DashboardPage() {
             </Button>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              {stats.recentLeads.length > 0 ? (
-                stats.recentLeads.map((lead: any) => (
-                  <div key={lead._id} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold">
-                        {lead.name.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-900">{lead.name}</p>
-                        <p className="text-xs text-slate-500">{lead.email}</p>
-                      </div>
-                    </div>
-                    <Badge variant="secondary" className="capitalize bg-slate-100 text-slate-700 hover:bg-slate-200">
-                      {lead.status}
-                    </Badge>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center py-8 text-slate-500">No recent leads found.</div>
-              )}
-            </div>
+            <RecentLeadsList 
+              leads={JSON.parse(JSON.stringify(stats.recentLeads))}
+              teamMembers={teamMembers.map(m => ({ id: m._id.toString(), name: m.name }))}
+              pipelines={pipelines.map(p => ({ id: p._id.toString(), name: p.name }))}
+              courses={courses.map(c => ({ id: c._id.toString(), name: c.name }))}
+              universities={universities.map(u => ({ id: u._id.toString(), name: u.name }))}
+            />
           </CardContent>
         </Card>
 
@@ -238,35 +230,35 @@ export default async function DashboardPage() {
               <CardDescription>Scheduled meetings and calls</CardDescription>
             </div>
             <Button variant="ghost" size="sm" asChild className="text-primary hover:text-primary/80">
-              <Link href="/followups" className="flex items-center">
-                View Schedule <ArrowRight className="ml-1 h-4 w-4" />
+              <Link href="/leads?followUpDate=today" className="flex items-center">
+                View All <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {stats.todayFollowUps.length > 0 ? (
-                stats.todayFollowUps.map((followup: any) => (
-                  <div key={followup._id} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
+                stats.todayFollowUps.map((lead: any) => (
+                  <div key={lead._id} className="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 transition-colors border border-transparent hover:border-slate-100">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-600">
                         <Clock className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="font-semibold text-slate-900">{(followup.leadId as any)?.name || "Unknown Lead"}</p>
+                        <p className="font-semibold text-slate-900">{lead.name}</p>
                         <p className="text-xs text-slate-500">
-                          {new Date(followup.scheduledAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {lead.phone} • {lead.followUpAt ? new Date(lead.followUpAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Time not set'}
                         </p>
                       </div>
                     </div>
-                    <Button size="sm" variant="ghost" className="text-green-600 hover:text-green-700 hover:bg-green-50">
-                      <CheckCircle2 className="h-5 w-5" />
-                    </Button>
+                    <Badge variant="outline" className="capitalize bg-white text-orange-600 border-orange-100">
+                      {lead.status}
+                    </Badge>
                   </div>
                 ))
               ) : (
-                <div className="flex flex-col items-center justify-center py-8 text-slate-500 gap-2">
-                  <AlertCircle className="h-8 w-8 opacity-20" />
+                <div className="text-center py-12 text-slate-400 italic flex flex-col items-center gap-2">
+                  <CheckCircle2 className="h-10 w-10 opacity-20" />
                   <p>No follow-ups scheduled for today.</p>
                 </div>
               )}

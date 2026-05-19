@@ -1,17 +1,43 @@
 "use server";
 import { connectDB } from "@/lib/db";
-import { Lead } from "@/models";
-import { requirePermission } from "@/lib/auth";
+import { Lead, SavedFilter, User } from "@/models";
+import { requirePermission, requireUser } from "@/lib/auth";
 import { leadSchema } from "@/lib/validators";
 import { revalidatePath } from "next/cache";
 import { emitToRoom } from "@/lib/socket-emit";
+
+export async function saveFilter(name: string, type: string, filters: any) {
+  const user = await requireUser();
+  await connectDB();
+  const filter = await SavedFilter.create({
+    name,
+    type,
+    filters,
+    userId: user.sub,
+  });
+  revalidatePath("/leads");
+  return { id: String(filter._id) };
+}
+
+export async function deleteFilter(id: string) {
+  const user = await requireUser();
+  await connectDB();
+  await SavedFilter.deleteOne({ _id: id, userId: user.sub });
+  revalidatePath("/leads");
+}
 
 export async function createLead(input: unknown) {
   const user = await requirePermission("leads.create");
   const data = leadSchema.parse(input);
   await connectDB();
+  
+  // Generate a simple Lead ID (e.g., LO-12345)
+  const count = await Lead.countDocuments();
+  const leadId = `LO-${1000 + count + 1}`;
+
   const lead = await Lead.create({
     ...data,
+    leadId,
     createdBy: user.sub,
     activities: [{ type: "create", by: user.sub, message: "Lead created" }],
   });
@@ -41,6 +67,88 @@ export async function changeStatus(leadId: string, status: string) {
   });
   emitToRoom("leads", "lead:updated", { id: leadId });
   revalidatePath(`/leads/${leadId}`);
+  revalidatePath("/leads");
+}
+
+export async function updateLead(leadId: string, input: any) {
+  const me = await requirePermission("leads.update");
+  await connectDB();
+  
+  const oldLead = await Lead.findById(leadId);
+  if (!oldLead) throw new Error("Lead not found");
+
+  await Lead.findByIdAndUpdate(
+    leadId,
+    { 
+      ...input,
+      $push: { 
+        activities: { 
+          type: "update", 
+          by: me.sub, 
+          message: `Lead details updated by ${me.name}`,
+          at: new Date()
+        } 
+      } 
+    }
+  );
+
+  emitToRoom("leads", "lead:updated", { id: leadId });
+  revalidatePath("/leads");
+  return { success: true };
+}
+
+export async function bulkAssignLeads(leadIds: string[], userId: string) {
+  const me = await requirePermission("leads.update");
+  await connectDB();
+  
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+
+  await Lead.updateMany(
+    { _id: { $in: leadIds } },
+    { 
+      assignedTo: userId,
+      assignedAt: new Date(),
+      $push: { 
+        activities: { 
+          type: "assignment", 
+          by: me.sub, 
+          message: `Lead bulk assigned to ${user.name} by ${me.name}`,
+          at: new Date()
+        } 
+      } 
+    }
+  );
+
+  emitToRoom("leads", "leads:updated", { ids: leadIds });
+  revalidatePath("/leads");
+  return { success: true };
+}
+
+export async function addLeadRemark(leadId: string, message: string, status?: string) {
+  const me = await requireUser();
+  await connectDB();
+  
+  const updateData: any = {
+    $push: { 
+      activities: { 
+        type: "note", 
+        by: me.sub, 
+        message: message,
+        at: new Date()
+      } 
+    }
+  };
+
+  if (status) {
+    updateData.status = status;
+  }
+
+  await Lead.findByIdAndUpdate(leadId, updateData);
+
+  emitToRoom("leads", "lead:updated", { id: leadId });
+  revalidatePath("/leads");
+  return { success: true };
 }
 
 export async function importLeadsAction(leadsData: any[], pipelineId?: string) {
@@ -77,13 +185,23 @@ export async function importLeadsAction(leadsData: any[], pipelineId?: string) {
         continue;
       }
 
+      // Generate a simple Lead ID (e.g., LO-12345)
+      const count = await Lead.countDocuments();
+      const leadId = `LO-${1000 + count + 1}`;
+
       await Lead.create({
+        leadId,
         name: String(name).trim(),
         phone: cleanPhone,
         email: email ? String(email).trim().toLowerCase() : undefined,
         state: data.state || data.province,
         city: data.city || data.location,
-        source: data.source || "csv_import",
+        country: data.country || "India",
+        source: data.source || "other",
+        temperature: data.temperature || "warm",
+        paymentStatus: data.paymentstatus || data.payment_status || "pending",
+        courseId: data.courseid || data.course_id,
+        universityId: data.universityid || data.university_id,
         pipelineId: pipelineId || data.pipelineid || data.pipeline_id,
         stage: data.stage || "New",
         createdBy: user.sub,

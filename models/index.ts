@@ -9,3 +9,4 @@ export * from "./Notification";
 export * from "./Activity";
 export * from "./Payment";
 export * from "./Pipeline";
+export * from "./SavedFilter";

@@ -6,7 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createLead } from "@/actions/leads";
 
-export function LeadForm({ pipelines }: { pipelines: { id: string; name: string }[] }) {
+export function LeadForm({ 
+  pipelines, 
+  courses, 
+  universities 
+}: { 
+  pipelines: { id: string; name: string }[],
+  courses: { id: string; name: string }[],
+  universities: { id: string; name: string }[]
+}) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -19,6 +27,8 @@ export function LeadForm({ pipelines }: { pipelines: { id: string; name: string 
         email: formData.get("email") as string,
         source: formData.get("source") as any || "other",
         pipelineId: formData.get("pipelineId") as string || undefined,
+        courseId: formData.get("courseId") as string || undefined,
+        universityId: formData.get("universityId") as string || undefined,
         status: "new",
       };
       await createLead(data);
@@ -61,12 +71,15 @@ export function LeadForm({ pipelines }: { pipelines: { id: string; name: string 
           <div className="space-y-2">
             <label className="text-sm font-medium">Source</label>
             <select name="source" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-              <option value="website">Website</option>
               <option value="facebook">Facebook</option>
               <option value="google_ads">Google Ads</option>
+              <option value="website">Website</option>
               <option value="instagram">Instagram</option>
+              <option value="whatsapp">WhatsApp</option>
               <option value="referral">Referral</option>
-              <option value="walkin">Walk-in</option>
+              <option value="organic">Organic</option>
+              <option value="justdial">Justdial</option>
+              <option value="indiamart">IndiaMART</option>
               <option value="other">Other</option>
             </select>
           </div>
@@ -81,6 +94,26 @@ export function LeadForm({ pipelines }: { pipelines: { id: string; name: string 
               </select>
             </div>
           )}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">University</label>
+              <select name="universityId" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <option value="">Select University</option>
+                {universities.map(u => (
+                  <option key={u.id} value={u.id}>{u.name}</option>
+                ))}
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Course</label>
+              <select name="courseId" className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <option value="">Select Course</option>
+                {courses.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
           <div className="flex gap-3 pt-4">
             <Button type="button" variant="outline" onClick={() => setOpen(false)} className="flex-1">
               Cancel
