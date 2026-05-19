@@ -50,7 +50,11 @@ export async function createLead(input: any) {
     createdBy: user.sub,
     activities: [{ type: "create", by: user.sub, message: "Lead created" }],
   });
-  emitToRoom("leads", "lead:created", { id: lead._id });
+  emitToRoom("leads", "lead:created", { 
+    id: lead._id, 
+    name: lead.name, 
+    leadId: lead.leadId 
+  });
   revalidatePath("/leads");
   return { id: String(lead._id) };
 }
@@ -138,9 +142,73 @@ export async function bulkAssignLeads(leadIds: string[], userId: string) {
       } 
     }
   );
-
-  emitToRoom("leads", "leads:updated", { ids: leadIds });
+  
+  emitToRoom("leads", "lead:assigned_bulk", { leadIds, userId });
   revalidatePath("/leads");
+}
+
+export async function saveDisposition(leadId: string, data: any) {
+  const me = await requireUser();
+  await connectDB();
+
+  const { type, disposition, subDisposition, note, nextFollowUpAt, priority, probability } = data;
+
+  const update: any = {
+    disposition,
+    subDisposition,
+    priority,
+    probability,
+    lastContactedAt: new Date(),
+    $push: {
+      callLogs: {
+        type,
+        disposition,
+        subDisposition,
+        note,
+        at: new Date(),
+        by: me.sub
+      },
+      activities: {
+        type: "call",
+        by: me.sub,
+        message: `Call ${type === 'connected' ? 'Connected' : 'Not Connected'}: ${disposition} - ${subDisposition}. Note: ${note}`,
+        at: new Date()
+      }
+    }
+  };
+
+  if (nextFollowUpAt) {
+    update.nextFollowUpAt = new Date(nextFollowUpAt);
+    update.followUpAt = new Date(nextFollowUpAt);
+  }
+
+  // Update lead status based on disposition
+  if (type === 'connected') {
+    if (disposition === 'Admission Process' && subDisposition === 'Admission Completed') {
+      update.status = 'converted';
+      update.convertedAt = new Date();
+    } else if (disposition === 'Hot Lead') {
+      update.status = 'hot';
+    } else if (disposition === 'Warm Lead') {
+      update.status = 'warm';
+    } else if (disposition === 'Cold Lead') {
+      update.status = 'cold';
+    } else if (disposition === 'Interested') {
+      update.status = 'interested';
+    } else if (disposition === 'Follow-Up') {
+      update.status = 'follow_up';
+    }
+  } else {
+    if (disposition === 'Spam Lead') update.status = 'spam';
+    if (disposition === 'Duplicate Lead') update.status = 'duplicate';
+  }
+
+  await Lead.findByIdAndUpdate(leadId, update);
+  
+  emitToRoom("leads", "lead:updated", { id: leadId });
+  revalidatePath("/leads");
+  revalidatePath(`/leads/${leadId}`);
+  
   return { success: true };
 }
 

@@ -88,6 +88,19 @@ const LeadSchema = new Schema(
     createdBy: { type: Schema.Types.ObjectId, ref: "User" },
     duplicateOf: { type: Schema.Types.ObjectId, ref: "Lead" },
     lastContactedAt: Date,
+    disposition: String,
+    subDisposition: String,
+    probability: { type: Number, min: 0, max: 100 },
+    priority: { type: String, enum: ["low", "medium", "high", "urgent"], default: "medium" },
+    nextFollowUpAt: Date,
+    callLogs: [{
+      type: { type: String }, // connected, not_connected
+      disposition: String,
+      subDisposition: String,
+      note: String,
+      at: { type: Date, default: Date.now },
+      by: { type: Schema.Types.ObjectId, ref: "User" }
+    }]
   },
   { timestamps: true }
 );

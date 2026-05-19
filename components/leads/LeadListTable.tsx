@@ -206,23 +206,29 @@ export function LeadListTable({
                 onClick={(e) => handleNameClick(e, l)}
               >
                 <td className="px-2 py-3" onClick={(e) => { e.stopPropagation(); toggleSelect(l._id.toString()); }}>
-                  <button className="text-slate-400 hover:text-primary transition-colors">
+                  <button className="text-black hover:text-primary transition-colors">
                     {selectedIds.includes(l._id.toString()) ? <CheckSquare className="h-4 w-4 text-primary" /> : <Square className="h-4 w-4" />}
                   </button>
                 </td>
-                <td className="px-2 py-3 font-bold text-slate-950">
+                <td className="px-2 py-3 font-normal text-black">
                   {index + 1}
                 </td>
                 <td className="px-3 py-3">
                   <div className="flex flex-col gap-0.5">
-                    <div className="font-black text-slate-950 group-hover:text-primary transition-colors flex items-center gap-1.5 leading-tight">
+                    <div 
+                      className="font-normal text-black group-hover:text-primary transition-colors flex items-center gap-1.5 leading-tight cursor-pointer hover:underline"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.open(`/leads/${l._id}`, '_blank');
+                      }}
+                    >
                       {l.name}
                       <Eye className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[9px] font-black text-slate-600 uppercase tracking-widest">{l.source}</span>
+                      <span className="text-[9px] font-normal text-black uppercase tracking-widest">{l.source}</span>
                       {l.temperature && (
-                        <span className={`text-[9px] font-black px-1 py-0 rounded ${
+                        <span className={`text-[9px] font-normal px-1 py-0 rounded ${
                           l.temperature === 'hot' ? 'bg-red-100 text-red-700' :
                           l.temperature === 'warm' ? 'bg-orange-100 text-orange-700' :
                           'bg-blue-100 text-blue-700'
@@ -236,40 +242,40 @@ export function LeadListTable({
                 <td className="px-3 py-3">
                   <div className="flex flex-col gap-1">
                     {l.universityId ? (
-                      <div className="flex items-center gap-1.5 text-[10px] font-black text-slate-950 bg-slate-100 px-1.5 py-0.5 rounded leading-tight">
-                        <Building2 className="h-2.5 w-2.5 text-slate-500" />
+                      <div className="flex items-center gap-1.5 text-[10px] font-normal text-black bg-slate-100 px-1.5 py-0.5 rounded leading-tight">
+                        <Building2 className="h-2.5 w-2.5 text-black" />
                         <span className="truncate">{l.universityId.name}</span>
                       </div>
                     ) : (
-                      <span className="text-[9px] text-slate-500 italic">No University</span>
+                      <span className="text-[9px] text-black italic">No University</span>
                     )}
                     {l.courseId ? (
-                      <div className="flex items-center gap-1.5 text-[10px] font-black text-primary bg-primary/5 px-1.5 py-0.5 rounded leading-tight">
+                      <div className="flex items-center gap-1.5 text-[10px] font-normal text-primary bg-primary/5 px-1.5 py-0.5 rounded leading-tight">
                         <GraduationCap className="h-2.5 w-2.5" />
                         <span className="truncate">{l.courseId.name}</span>
                       </div>
                     ) : (
-                      <span className="text-[9px] text-slate-500 italic">No Course</span>
+                      <span className="text-[9px] text-black italic">No Course</span>
                     )}
                   </div>
                 </td>
                 <td className="px-3 py-3">
                   <div className="flex flex-col gap-0.5">
-                    <div className="flex items-center gap-1.5 text-slate-950 font-black leading-tight">
-                      <Phone className="h-3 w-3 text-slate-500" /> {l.phone}
+                    <div className="flex items-center gap-1.5 text-black font-normal leading-tight">
+                      <Phone className="h-3 w-3 text-black" /> {l.phone}
                     </div>
-                    <div className="flex items-center gap-1.5 text-slate-600 text-[10px] font-bold leading-tight">
-                      <Mail className="h-3 w-3 text-slate-400" /> <span className="truncate max-w-[120px]">{l.email || "No email"}</span>
+                    <div className="flex items-center gap-1.5 text-black text-[10px] font-normal leading-tight">
+                      <Mail className="h-3 w-3 text-black" /> <span className="truncate max-w-[120px]">{l.email || "No email"}</span>
                     </div>
                   </div>
                 </td>
                 <td className="px-3 py-3">
                   <div className="flex flex-col gap-1.5">
-                    <Badge variant="secondary" className={`capitalize font-black text-[9px] w-fit px-1.5 py-0 border-none ${
+                    <Badge variant="secondary" className={`capitalize font-normal text-[9px] w-fit px-1.5 py-0 border-none ${
                       l.temperature === 'hot' ? 'bg-red-50 text-red-700' :
                       l.status === 'converted' ? 'bg-green-50 text-green-700' :
                       l.status === 'interested' ? 'bg-blue-50 text-blue-700' :
-                      'bg-slate-100 text-slate-800'
+                      'bg-slate-100 text-black'
                     }`}>
                       {l.status.replace('_', ' ')}
                     </Badge>
@@ -281,13 +287,13 @@ export function LeadListTable({
                 <td className="px-3 py-3">
                   {l.assignedTo ? (
                     <div className="flex items-center gap-1.5">
-                      <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[9px] font-black text-primary shrink-0">
+                      <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[9px] font-normal text-primary shrink-0">
                         {l.assignedTo.name.charAt(0)}
                       </div>
-                      <span className="font-black text-slate-950 truncate max-w-[80px]">{l.assignedTo.name}</span>
+                      <span className="font-normal text-black truncate max-w-[80px]">{l.assignedTo.name}</span>
                     </div>
                   ) : (
-                    <span className="text-slate-500 italic text-[10px]">Unassigned</span>
+                    <span className="text-black italic text-[10px]">Unassigned</span>
                   )}
                 </td>
                 <td className="px-3 py-3 text-right" onClick={(e) => e.stopPropagation()}>

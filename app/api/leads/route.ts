@@ -47,6 +47,10 @@ export async function POST(req: Request) {
     duplicateOf: dup?._id,
     activities: [{ type: "create", by: user.sub, message: "Lead created" }],
   });
-  emitToRoom("leads", "lead:created", { id: lead._id });
+  emitToRoom("leads", "lead:created", { 
+    id: lead._id, 
+    name: lead.name, 
+    source: lead.source 
+  });
   return NextResponse.json({ id: lead._id }, { status: 201 });
 }

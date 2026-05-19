@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requireUser, requirePermission } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import { Lead, User, Pipeline, Course, University, SavedFilter } from "@/models";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -8,6 +8,7 @@ import { LeadImport } from "@/components/leads/LeadImport";
 import { LeadForm } from "@/components/leads/LeadForm";
 import { LeadFilters } from "@/components/leads/LeadFilters";
 import { LeadListTable } from "@/components/leads/LeadListTable";
+import { LeadLimitSelector } from "@/components/leads/LeadLimitSelector";
 import { Badge } from "@/components/ui/badge";
 import { startOfDay, endOfDay, subDays, startOfWeek, startOfMonth } from "date-fns";
 import mongoose from "mongoose";
@@ -41,6 +42,7 @@ export default async function LeadsPage({
   const state = sp.state as string | undefined;
   const country = sp.country as string | undefined;
   const q = sp.q as string | undefined;
+  const limit = sp.limit ? (sp.limit === "all" ? 0 : parseInt(sp.limit as string)) : 50;
 
   const smart = sp.smart as string | undefined;
 
@@ -165,7 +167,7 @@ export default async function LeadsPage({
       .populate("courseId", "name")
       .populate("universityId", "name")
       .populate("activities.by", "name")
-      .limit(100),
+      .limit(limit),
     User.find({ 
       role: { $in: ["counselor", "team_leader", "manager", "admin"] } 
     }).select("name role"),
@@ -215,9 +217,12 @@ export default async function LeadsPage({
             <CardTitle className="text-xl font-bold">Leads List</CardTitle>
             <CardDescription>Showing {leads.length} leads matching filters.</CardDescription>
           </div>
-          <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
-            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">{leads.length} Total</span>
+          <div className="flex items-center gap-3">
+            <LeadLimitSelector />
+            <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">{leads.length} Total</span>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
