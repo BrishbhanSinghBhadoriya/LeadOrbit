@@ -45,6 +45,7 @@ export default async function LeadsPage({
   const limit = sp.limit ? (sp.limit === "all" ? 0 : parseInt(sp.limit as string)) : 50;
 
   const smart = sp.smart as string | undefined;
+  const qualityBand = sp.qualityBand as string | undefined;
 
   // Build query
   let query: any = {};
@@ -126,6 +127,13 @@ export default async function LeadsPage({
     query.lastContactedAt = { $lt: sevenDaysAgo };
   } else if (smart === "high_priority") {
     query.score = { $gte: 70 };
+  }
+  if (qualityBand) {
+    if (qualityBand === "very_good") query.qualityScore = { $gte: 6, $lte: 10 };
+    else if (qualityBand === "good") query.qualityScore = { $gte: 1, $lte: 5 };
+    else if (qualityBand === "neutral") query.qualityScore = { $eq: 0 };
+    else if (qualityBand === "poor") query.qualityScore = { $gte: -5, $lte: -1 };
+    else if (qualityBand === "very_poor") query.qualityScore = { $gte: -10, $lte: -6 };
   }
 
   // Search

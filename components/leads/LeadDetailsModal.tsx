@@ -72,6 +72,15 @@ const PAYMENT_OPTIONS = [
   { id: "pending", name: "Pending" },
 ];
 
+const getQualityMeta = (score?: number) => {
+  const value = Math.max(-10, Math.min(10, score ?? 0));
+  if (value >= 6) return { label: "Very Good", cls: "bg-emerald-50 text-emerald-700" };
+  if (value >= 1) return { label: "Good", cls: "bg-green-50 text-green-700" };
+  if (value === 0) return { label: "Neutral", cls: "bg-slate-100 text-slate-600" };
+  if (value >= -5) return { label: "Poor", cls: "bg-amber-50 text-amber-700" };
+  return { label: "Very Poor", cls: "bg-red-50 text-red-700" };
+};
+
 export function LeadDetailsModal({
   lead,
   teamMembers,
@@ -137,6 +146,28 @@ export function LeadDetailsModal({
     }
   };
 
+  const pad = 16;
+  const modalBoxStyle =
+    clickPos && typeof window !== "undefined"
+      ? (() => {
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          const estW = Math.min(896, window.innerWidth - 2 * pad);
+          const estH = Math.min(window.innerHeight * 0.9, window.innerHeight - 2 * pad);
+          const left = Math.max(pad, Math.min(clickPos.x, vw - estW - pad));
+          const top = Math.max(pad, Math.min(clickPos.y, vh - estH - pad));
+          return {
+            position: "fixed" as const,
+            top,
+            left,
+            width: estW,
+            maxHeight: estH,
+            transform: "none" as const,
+            margin: 0,
+          };
+        })()
+      : {};
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
       <div 
@@ -144,13 +175,7 @@ export function LeadDetailsModal({
         onClick={onClose} 
       />
       <div 
-        style={clickPos ? {
-          position: 'fixed',
-          top: typeof window !== 'undefined' ? Math.max(20, Math.min(clickPos.y - 200, window.innerHeight - 700)) : '50%',
-          left: typeof window !== 'undefined' ? Math.max(20, Math.min(clickPos.x - 450, window.innerWidth - 900)) : '50%',
-          transform: clickPos ? 'none' : 'translate(-50%, -50%)',
-          margin: 0
-        } : {}}
+        style={clickPos ? modalBoxStyle : {}}
         className={`relative w-full max-w-4xl max-h-[90vh] bg-slate-50 shadow-2xl rounded-[2.5rem] overflow-hidden flex flex-col animate-in zoom-in-95 ${clickPos ? 'fade-in duration-300' : 'slide-in-from-top-10 duration-500'} border border-white/20`}
       >
         {/* Header */}
@@ -228,6 +253,9 @@ export function LeadDetailsModal({
                 <Badge variant="outline" className="px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider border-none bg-slate-100 text-slate-600">
                   <CreditCard className="h-3 w-3 mr-1.5" />
                   {formData.paymentStatus.replace('_', ' ')}
+                </Badge>
+                <Badge className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider border-none ${getQualityMeta(lead.qualityScore).cls}`}>
+                  Quality {Math.max(-10, Math.min(10, lead.qualityScore ?? 0))} ({getQualityMeta(lead.qualityScore).label})
                 </Badge>
               </div>
 

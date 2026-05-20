@@ -6,6 +6,52 @@ import { leadSchema } from "@/lib/validators";
 import { revalidatePath } from "next/cache";
 import { emitToRoom } from "@/lib/socket-emit";
 
+function clampQualityScore(v: number) {
+  return Math.max(-10, Math.min(10, v));
+}
+
+function getStatusQualityDelta(status?: string) {
+  switch (status) {
+    case "converted":
+      return 3;
+    case "qualified":
+      return 2;
+    case "interested":
+    case "hot":
+      return 1;
+    case "follow_up":
+    case "connected":
+      return 0;
+    case "cold":
+    case "not_interested":
+    case "duplicate":
+    case "spam":
+    case "rejected":
+      return -1;
+    default:
+      return 0;
+  }
+}
+
+function getDispositionQualityDelta(
+  type?: string,
+  disposition?: string,
+  subDisposition?: string
+) {
+  if (type === "connected") {
+    if (disposition === "Admission Process" && subDisposition === "Admission Completed") return 3;
+    if (disposition === "Hot Lead") return 2;
+    if (disposition === "Interested") return 1;
+    if (disposition === "Warm Lead" || disposition === "Follow-Up") return 0;
+    if (disposition === "Cold Lead") return -1;
+  } else {
+    if (disposition === "Wrong Number") return -2;
+    if (disposition === "Spam Lead" || disposition === "Duplicate Lead") return -3;
+    return -1;
+  }
+  return 0;
+}
+
 export async function saveFilter(name: string, type: string, filters: any) {
   const user = await requireUser();
   await connectDB();
@@ -47,6 +93,7 @@ export async function createLead(input: any) {
   const lead = await Lead.create({
     ...data,
     leadId,
+    qualityScore: 0,
     createdBy: user.sub,
     activities: [{ type: "create", by: user.sub, message: "Lead created" }],
   });
@@ -203,6 +250,10 @@ export async function saveDisposition(leadId: string, data: any) {
     if (disposition === 'Duplicate Lead') update.status = 'duplicate';
   }
 
+  const leadDoc = await Lead.findById(leadId).select("qualityScore");
+  if (!leadDoc) throw new Error("Lead not found");
+  const delta = getDispositionQualityDelta(type, disposition, subDisposition);
+  update.qualityScore = clampQualityScore((leadDoc.qualityScore ?? 0) + delta);
   await Lead.findByIdAndUpdate(leadId, update);
   
   emitToRoom("leads", "lead:updated", { id: leadId });
@@ -215,6 +266,8 @@ export async function saveDisposition(leadId: string, data: any) {
 export async function addLeadRemark(leadId: string, message: string, status?: string) {
   const me = await requireUser();
   await connectDB();
+  const leadDoc = await Lead.findById(leadId).select("qualityScore");
+  if (!leadDoc) throw new Error("Lead not found");
   
   const updateData: any = {
     $push: { 
@@ -230,6 +283,9 @@ export async function addLeadRemark(leadId: string, message: string, status?: st
   if (status) {
     updateData.status = status;
   }
+  // Every counselor/user remark contributes towards quality scoring.
+  const delta = status ? getStatusQualityDelta(status) : 1;
+  updateData.qualityScore = clampQualityScore((leadDoc.qualityScore ?? 0) + delta);
 
   await Lead.findByIdAndUpdate(leadId, updateData);
 

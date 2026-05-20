@@ -1,5 +1,5 @@
 "use client";
-import { Bell, Search, Palette, Check, Trash2, Clock } from "lucide-react";
+import { Bell, Search, Palette, Check, Trash2, Clock, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import type { JwtPayload } from "@/types";
@@ -45,6 +45,18 @@ export function Topbar({ user }: { user: JwtPayload }) {
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem('crm-theme', newTheme);
     setShowThemes(false);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await fetch("/api/auth?action=logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+    } finally {
+      window.location.href = "/login";
+    }
   };
 
   const initials = (user.name ?? user.email).slice(0, 2).toUpperCase();
@@ -189,6 +201,14 @@ export function Topbar({ user }: { user: JwtPayload }) {
         <Avatar className="h-9 w-9 border border-slate-200">
           <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">{initials}</AvatarFallback>
         </Avatar>
+        <button
+          onClick={handleLogout}
+          className="h-9 px-3 rounded-lg border border-slate-200 hover:bg-slate-100 text-xs font-semibold text-slate-700 inline-flex items-center gap-1.5 transition-colors"
+          title="Logout"
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Logout</span>
+        </button>
       </div>
     </header>
   );

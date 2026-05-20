@@ -12,10 +12,20 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LeadAssign } from "@/components/leads/LeadAssign";
 import { LeadDetailsModal } from "@/components/leads/LeadDetailsModal";
-import { bulkAssignLeads, addLeadRemark, updateLead } from "@/actions/leads";
+import { bulkAssignLeads, addLeadRemark } from "@/actions/leads";
+import { phoneToTelHref } from "@/lib/phone";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
+
+const getQualityMeta = (score?: number) => {
+  const value = Math.max(-10, Math.min(10, score ?? 0));
+  if (value >= 6) return { label: "Very Good", cls: "bg-emerald-50 text-emerald-700" };
+  if (value >= 1) return { label: "Good", cls: "bg-green-50 text-green-700" };
+  if (value === 0) return { label: "Neutral", cls: "bg-slate-100 text-slate-600" };
+  if (value >= -5) return { label: "Poor", cls: "bg-amber-50 text-amber-700" };
+  return { label: "Very Poor", cls: "bg-red-50 text-red-700" };
+};
 
 const STATUS_OPTIONS = [
   { id: "new", name: "New Lead" },
@@ -56,6 +66,10 @@ export function LeadListTable({
   universities,
   isGM,
 }: LeadListTableProps) {
+  const POPOVER_WIDTH = 400;
+  const POPOVER_HEIGHT = 500;
+  const DROPDOWN_GAP = 8;
+  const VIEWPORT_PADDING = 12;
   const router = useRouter();
   const [selectedLead, setSelectedLead] = useState<any>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -83,12 +97,27 @@ export function LeadListTable({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [popoverLead]);
 
-  const handleNameClick = (e: React.MouseEvent, lead: any) => {
+  const handleRowClick = (e: React.MouseEvent<HTMLElement>, lead: any) => {
     e.stopPropagation();
-    const pos = { x: e.clientX, y: e.clientY };
-    setPopoverLead(lead);
+    const rect = e.currentTarget.getBoundingClientRect();
+    const vw = typeof window === "undefined" ? 1920 : window.innerWidth;
+    const vh = typeof window === "undefined" ? 1080 : window.innerHeight;
+    const left = Math.max(
+      VIEWPORT_PADDING,
+      Math.min(rect.left, vw - POPOVER_WIDTH - VIEWPORT_PADDING)
+    );
+    const belowTop = rect.bottom + DROPDOWN_GAP;
+    const top =
+      belowTop + POPOVER_HEIGHT <= vh - VIEWPORT_PADDING
+        ? belowTop
+        : Math.max(VIEWPORT_PADDING, rect.top - POPOVER_HEIGHT - DROPDOWN_GAP);
+    const pos = { x: left, y: top };
+     setPopoverLead(lead);
     setPopoverPos(pos);
-    setModalPos(pos);
+    setModalPos({
+      x: left,
+      y: top + POPOVER_HEIGHT + DROPDOWN_GAP,
+    });
     setPopoverTab("details");
     setRemark("");
   };
@@ -181,7 +210,7 @@ export function LeadListTable({
       )}
 
       <div className="w-full overflow-x-auto custom-scrollbar">
-        <table className="w-full text-[10px] table-auto border-collapse min-w-[1200px]">
+        <table className="w-full text-[10px] table-auto border-collapse min-w-[1280px]">
           <thead>
             <tr className="border-b border-slate-200 bg-slate-50 text-left font-black text-slate-950 uppercase tracking-tighter">
               <th className="px-2 py-3 w-8">
@@ -192,11 +221,13 @@ export function LeadListTable({
               <th className="px-2 py-3 w-8 text-center">NO</th>
               <th className="px-3 py-3 min-w-[120px]">Name</th>
               <th className="px-3 py-3 min-w-[120px]">Email</th>
+              <th className="px-3 py-3 min-w-[110px]">Mobile</th>
               <th className="px-3 py-3 w-20">Source</th>
               <th className="px-3 py-3 min-w-[120px]">University</th>
               <th className="px-3 py-3 min-w-[120px]">Course</th>
+              <th className="px-3 py-3 w-28">Quality</th>
               <th className="px-3 py-3 w-24">Created Date</th>
-              <th className="px-3 py-3 w-24">Owner</th>
+              
               <th className="px-3 py-3 min-w-[150px]">Last Activity</th>
               <th className="px-3 py-3 w-24">Disposition</th>
               <th className="px-3 py-3 w-32">Sub Disposition</th>
@@ -208,7 +239,7 @@ export function LeadListTable({
               <tr 
                 key={l._id.toString()} 
                 className={`hover:bg-slate-50/80 transition-colors group cursor-pointer ${selectedIds.includes(l._id.toString()) ? 'bg-primary/5' : ''}`}
-                onClick={(e) => handleNameClick(e, l)}
+                onClick={(e) => handleRowClick(e, l)}
               >
                 <td className="px-2 py-3" onClick={(e) => { e.stopPropagation(); toggleSelect(l._id.toString()); }}>
                   <button className="text-black hover:text-primary transition-colors">
@@ -235,6 +266,20 @@ export function LeadListTable({
                     <Mail className="h-3 w-3 shrink-0" /> {l.email || "N/A"}
                   </div>
                 </td>
+                <td className="px-3 py-3" onClick={(e) => e.stopPropagation()}>
+                  {phoneToTelHref(l.phone) ? (
+                    <a
+                      href={phoneToTelHref(l.phone)!}
+                      className="inline-flex items-center gap-1 text-primary font-bold hover:underline truncate max-w-[120px]"
+                      title="Call on this device"
+                    >
+                      <Phone className="h-3 w-3 shrink-0" />
+                      <span className="truncate">{l.phone}</span>
+                    </a>
+                  ) : (
+                    <span className="text-slate-400 font-medium">N/A</span>
+                  )}
+                </td>
                 <td className="px-3 py-3">
                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest bg-slate-100 px-1.5 py-0.5 rounded">{l.source}</span>
                 </td>
@@ -247,6 +292,14 @@ export function LeadListTable({
                   <div className="flex items-center gap-1 text-primary font-bold truncate max-w-[120px]">
                     <GraduationCap className="h-3 w-3 shrink-0" /> {l.courseId?.name || "N/A"}
                   </div>
+                </td>
+                <td className="px-3 py-3">
+                  <Badge
+                    variant="outline"
+                    className={`text-[9px] font-bold uppercase border-none px-1.5 py-0 ${getQualityMeta(l.qualityScore).cls}`}
+                  >
+                    {getQualityMeta(l.qualityScore).label} ({Math.max(-10, Math.min(10, l.qualityScore ?? 0))})
+                  </Badge>
                 </td>
                 <td className="px-3 py-3 text-slate-500 font-bold whitespace-nowrap">
                   {format(new Date(l.createdAt), "dd MMM yyyy")}
@@ -289,11 +342,17 @@ export function LeadListTable({
                     >
                       <Eye className="h-3.5 w-3.5" />
                     </Button>
-                    <Button variant="ghost" size="icon" asChild className="h-7 w-7 rounded-full text-slate-400 hover:text-primary hover:bg-primary/5">
-                      <a href={`tel:${l.phone}`} title="Call Lead">
+                    {phoneToTelHref(l.phone) ? (
+                      <Button variant="ghost" size="icon" asChild className="h-7 w-7 rounded-full text-slate-400 hover:text-primary hover:bg-primary/5">
+                        <a href={phoneToTelHref(l.phone)!} title="Call Lead">
+                          <Phone className="h-3.5 w-3.5" />
+                        </a>
+                      </Button>
+                    ) : (
+                      <Button variant="ghost" size="icon" disabled className="h-7 w-7 rounded-full text-slate-300" title="No phone">
                         <Phone className="h-3.5 w-3.5" />
-                      </a>
-                    </Button>
+                      </Button>
+                    )}
                     {isGM && (
                       <LeadAssign 
                         leadId={l._id.toString()} 
@@ -307,7 +366,7 @@ export function LeadListTable({
             ))}
             {leads.length === 0 && (
               <tr>
-                <td colSpan={13} className="px-6 py-12 text-center text-slate-400">
+                <td colSpan={15} className="px-6 py-12 text-center text-slate-400">
                   <div className="flex flex-col items-center gap-2">
                     <Search className="h-10 w-10 opacity-20" />
                     <p>No leads found. Try adjusting your filters or import some data.</p>
@@ -338,14 +397,14 @@ export function LeadListTable({
         {popoverLead && (
           <motion.div
             ref={popoverRef}
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
             style={{ 
               position: 'fixed', 
-              top: typeof window !== 'undefined' ? Math.min(popoverPos.y + 10, window.innerHeight - 520) : popoverPos.y + 10, 
-              left: typeof window !== 'undefined' ? Math.min(popoverPos.x + 10, window.innerWidth - 420) : popoverPos.x + 10,
-              zIndex: 150 
+              left: popoverPos.x,
+              top: popoverPos.y,
+              zIndex: 150,
             }}
             className="bg-white rounded-[2rem] shadow-2xl border border-slate-100 w-[400px] max-h-[500px] flex flex-col overflow-hidden"
           >
@@ -400,6 +459,12 @@ export function LeadListTable({
                     }`}>
                       {popoverLead.temperature}
                     </Badge>
+                    <Badge
+                      variant="outline"
+                      className={`text-[10px] font-bold uppercase py-1 border-none ${getQualityMeta(popoverLead.qualityScore).cls}`}
+                    >
+                      Quality: {Math.max(-10, Math.min(10, popoverLead.qualityScore ?? 0))}
+                    </Badge>
                     <Badge variant="outline" className="text-[10px] font-bold uppercase py-1 border-none bg-slate-100 text-slate-500">
                       {popoverLead.source}
                     </Badge>
@@ -416,9 +481,18 @@ export function LeadListTable({
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Phone</p>
-                      <p className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                        <Phone className="h-3 w-3 text-slate-300" /> {popoverLead.phone}
-                      </p>
+                      {phoneToTelHref(popoverLead.phone) ? (
+                        <a
+                          href={phoneToTelHref(popoverLead.phone)!}
+                          className="text-xs font-bold text-primary flex items-center gap-1.5 hover:underline"
+                        >
+                          <Phone className="h-3 w-3 text-primary" /> {popoverLead.phone}
+                        </a>
+                      ) : (
+                        <p className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                          <Phone className="h-3 w-3 text-slate-300" /> {popoverLead.phone || "N/A"}
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-1">
                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Email</p>
@@ -512,6 +586,10 @@ export function LeadListTable({
                 variant="ghost" 
                 className="w-full h-10 rounded-xl text-[10px] font-black uppercase tracking-widest text-primary hover:bg-primary/5"
                 onClick={() => {
+                  setModalPos({
+                    x: popoverPos.x,
+                    y: popoverPos.y + POPOVER_HEIGHT + DROPDOWN_GAP,
+                  });
                   setSelectedLead(popoverLead);
                   setPopoverLead(null);
                 }}

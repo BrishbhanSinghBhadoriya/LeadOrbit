@@ -107,6 +107,14 @@ const SMART_FILTERS = [
   { id: "inactive", name: "Inactive (7+ days)" },
 ];
 
+const QUALITY_BAND_OPTIONS = [
+  { id: "very_good", name: "Very Good (+6 to +10)" },
+  { id: "good", name: "Good (+1 to +5)" },
+  { id: "neutral", name: "Neutral (0)" },
+  { id: "poor", name: "Poor (-1 to -5)" },
+  { id: "very_poor", name: "Very Poor (-6 to -10)" },
+];
+
 export function LeadFilters({
   initialFilters,
   teamMembers,
@@ -366,6 +374,7 @@ export function LeadFilters({
             {isExpanded && (
               <div className="pt-6 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 animate-in slide-in-from-top-4 duration-300">
                 <MultiSelect label="Lead Temperature" icon={Flame} options={TEMPERATURE_OPTIONS} filterKey="temperature" />
+                <MultiSelect label="Quality Score" icon={Check} options={QUALITY_BAND_OPTIONS} filterKey="qualityBand" />
                 <MultiSelect label="Payment Status" icon={CreditCard} options={PAYMENT_OPTIONS} filterKey="paymentStatus" />
                 <MultiSelect label="Call Status" icon={PhoneCall} options={CALL_STATUS_OPTIONS} filterKey="callStatus" />
                 <MultiSelect label="WhatsApp Status" icon={MessageSquare} options={WHATSAPP_STATUS_OPTIONS} filterKey="whatsappStatus" />

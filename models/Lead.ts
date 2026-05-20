@@ -74,6 +74,7 @@ const LeadSchema = new Schema(
     emailStatus: { type: String, enum: EMAIL_STATUS, index: true },
     admissionStage: { type: String, enum: ADMISSION_STAGE, index: true },
     score: { type: Number, default: 0, index: true }, // Lead score based on activities
+    qualityScore: { type: Number, default: 0, min: -10, max: 10, index: true },
     assignedTo: { type: Schema.Types.ObjectId, ref: "User", index: true },
     assignedAt: Date,
     teamId: { type: Schema.Types.ObjectId, ref: "User", index: true },
