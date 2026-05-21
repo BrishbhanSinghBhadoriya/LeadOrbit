@@ -79,6 +79,7 @@ const LeadSchema = new Schema(
     assignedAt: Date,
     teamId: { type: Schema.Types.ObjectId, ref: "User", index: true },
     pipelineId: { type: Schema.Types.ObjectId, ref: "Pipeline", index: true },
+    campaignId: { type: Schema.Types.ObjectId, ref: "Campaign", index: true },
     stage: { type: String, index: true },
     notes: String,
     followUpAt: { type: Date, index: true },

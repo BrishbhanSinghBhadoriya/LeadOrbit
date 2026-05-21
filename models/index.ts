@@ -10,3 +10,7 @@ export * from "./Activity";
 export * from "./Payment";
 export * from "./Pipeline";
 export * from "./SavedFilter";
+export * from "./Campaign";
+export * from "./WhatsAppTemplate";
+export * from "./BreakSchedule";
+export * from "./AttendanceLog";

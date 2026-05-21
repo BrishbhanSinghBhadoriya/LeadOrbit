@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { 
   Phone, Mail, Building2, GraduationCap, Search, Eye, 
   CheckSquare, Square, UserPlus, X, Send, History, 
@@ -26,6 +27,9 @@ const getQualityMeta = (score?: number) => {
   if (value >= -5) return { label: "Poor", cls: "bg-amber-50 text-amber-700" };
   return { label: "Very Poor", cls: "bg-red-50 text-red-700" };
 };
+
+const shortText = (value: string, max = 42) =>
+  value.length > max ? `${value.slice(0, max).trimEnd()}...` : value;
 
 const STATUS_OPTIONS = [
   { id: "new", name: "New Lead" },
@@ -231,6 +235,7 @@ export function LeadListTable({
               <th className="px-3 py-3 min-w-[150px]">Last Activity</th>
               <th className="px-3 py-3 w-24">Disposition</th>
               <th className="px-3 py-3 w-32">Sub Disposition</th>
+              <th className="px-3 py-3 w-24">Owner</th>
               <th className="px-3 py-3 text-right w-16">Actions</th>
             </tr>
           </thead>
@@ -250,16 +255,15 @@ export function LeadListTable({
                   {index + 1}
                 </td>
                 <td className="px-3 py-3">
-                  <div 
-                    className="font-bold text-slate-900 group-hover:text-primary transition-colors flex items-center gap-1 leading-tight cursor-pointer hover:underline"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      window.open(`/leads/${l._id}`, '_blank');
-                    }}
+                  <Link
+                    href={`/leads/${l._id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    className="font-bold text-slate-900 group-hover:text-primary transition-colors flex items-center gap-1 leading-tight hover:underline"
+                    prefetch={false}
                   >
                     {l.name}
                     <Eye className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity text-primary" />
-                  </div>
+                  </Link>
                 </td>
                 <td className="px-3 py-3">
                   <div className="flex items-center gap-1 text-slate-600 font-medium truncate max-w-[120px]">
@@ -305,21 +309,15 @@ export function LeadListTable({
                   {format(new Date(l.createdAt), "dd MMM yyyy")}
                 </td>
                 <td className="px-3 py-3">
-                  {l.assignedTo ? (
-                    <div className="flex items-center gap-1.5">
-                      <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[8px] font-bold text-primary shrink-0">
-                        {l.assignedTo.name.charAt(0)}
-                      </div>
-                      <span className="font-bold text-slate-700 truncate max-w-[80px]">{l.assignedTo.name}</span>
-                    </div>
-                  ) : (
-                    <span className="text-slate-400 italic">Unassigned</span>
-                  )}
-                </td>
-                <td className="px-3 py-3">
                   <div className="flex items-center gap-1.5 text-slate-600 max-w-[180px]">
                     <div className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                    <span className="truncate">{l.activities && l.activities.length > 0 ? l.activities[l.activities.length - 1].message : "Lead Created"}</span>
+                    <span className="truncate">
+                      {shortText(
+                        l.activities && l.activities.length > 0
+                          ? l.activities[l.activities.length - 1].message
+                          : "Lead Created"
+                      )}
+                    </span>
                   </div>
                 </td>
                 <td className="px-3 py-3">
@@ -332,15 +330,29 @@ export function LeadListTable({
                     {l.subDisposition || "N/A"}
                   </span>
                 </td>
+                <td className="px-3 py-3">
+                  {l.assignedTo ? (
+                    <div className="flex items-center gap-1.5">
+                      <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[8px] font-bold text-primary shrink-0">
+                        {l.assignedTo.name.charAt(0)}
+                      </div>
+                      <span className="font-bold text-slate-700 truncate max-w-[80px]">{l.assignedTo.name}</span>
+                    </div>
+                  ) : (
+                    <span className="text-slate-400 italic">Unassigned</span>
+                  )}
+                </td>
                 <td className="px-3 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                   <div className="flex items-center justify-end gap-1">
                     <Button 
                       variant="ghost" 
                       size="icon" 
                       className="h-7 w-7 rounded-lg text-slate-400 hover:text-primary hover:bg-primary/5"
-                      onClick={() => window.open(`/leads/${l._id}`, '_blank')}
+                      asChild
                     >
-                      <Eye className="h-3.5 w-3.5" />
+                      <Link href={`/leads/${l._id}`} prefetch={false}>
+                        <Eye className="h-3.5 w-3.5" />
+                      </Link>
                     </Button>
                     {phoneToTelHref(l.phone) ? (
                       <Button variant="ghost" size="icon" asChild className="h-7 w-7 rounded-full text-slate-400 hover:text-primary hover:bg-primary/5">

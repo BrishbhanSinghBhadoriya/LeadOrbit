@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { verifyAccess } from "./jwt";
 import type { JwtPayload, Role } from "@/types";
 import { can, type Permission } from "@/config/rbac";
@@ -17,15 +18,18 @@ export async function getCurrentUser(): Promise<JwtPayload | null> {
   }
 }
 
-export async function requireUser() {
+export async function requireUser(): Promise<JwtPayload> {
   const u = await getCurrentUser();
-  if (!u) throw new Response("Unauthorized", { status: 401 });
+  if (!u) redirect("/login");
   return u;
 }
 
-export async function requirePermission(p: Permission) {
+export async function requirePermission(p: Permission): Promise<JwtPayload> {
   const u = await requireUser();
-  if (!can(u.role as Role, p)) throw new Error("Forbidden");
+  if (!can(u.role as Role, p)) {
+    // User is logged in but doesn't have permission — redirect to dashboard
+    redirect("/dashboard");
+  }
   return u;
 }
 

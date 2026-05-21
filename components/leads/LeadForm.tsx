@@ -42,8 +42,8 @@ export function LeadForm({
 
   if (!open) {
     return (
-      <Button onClick={() => setOpen(true)} className="gap-2">
-        <Plus className="h-4 w-4" />
+      <Button onClick={() => setOpen(true)} size="sm" className="h-8 rounded-lg text-xs font-semibold gap-1.5">
+        <Plus className="h-3.5 w-3.5" />
         Add Lead
       </Button>
     );

@@ -4,6 +4,7 @@ import { User } from "@/models";
 import { hashPassword, verifyPassword } from "@/lib/password";
 import { signAccess, signRefresh } from "@/lib/jwt";
 import { ACCESS_COOKIE, REFRESH_COOKIE, getCurrentUser, canCreateRole } from "@/lib/auth";
+import { AttendanceLog } from "@/models";
 import { loginSchema, registerSchema } from "@/lib/validators";
 import type { Role } from "@/types";
 
@@ -46,6 +47,14 @@ export async function POST(req: Request) {
   }
 
   if (action === "logout") {
+    const currentUser = await getCurrentUser();
+    if (currentUser) {
+      await AttendanceLog.findOneAndUpdate(
+        { userId: currentUser.sub, logoutAt: { $exists: false } },
+        { logoutAt: new Date(), lastActiveAt: new Date() },
+        { sort: { loginAt: -1 } }
+      );
+    }
     const res = NextResponse.json({ ok: true });
     res.cookies.set(ACCESS_COOKIE, "", { ...cookieBase, maxAge: 0 });
     res.cookies.set(REFRESH_COOKIE, "", { ...cookieBase, maxAge: 0 });
@@ -71,6 +80,12 @@ export async function POST(req: Request) {
       $push: { refreshTokens: { $each: [refresh], $slice: -5 } }
     }
   );
+
+  await AttendanceLog.create({
+    userId: user._id,
+    loginAt: new Date(),
+    lastActiveAt: new Date(),
+  });
 
   const res = NextResponse.json({
     user: { id: user._id, name: user.name, email: user.email, role: user.role },

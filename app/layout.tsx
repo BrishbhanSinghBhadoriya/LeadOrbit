@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LeadOrbit",
-  description: "Lead Management CRM System",
+  title: "Unifost Edu CRM",
+  description: "Unifost Edu Pvt. Ltd. — Professional EdTech CRM",
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },

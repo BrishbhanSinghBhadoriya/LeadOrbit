@@ -3,13 +3,11 @@ import { connectDB } from "@/lib/db";
 import { Lead, User, Pipeline, Course, University, SavedFilter } from "@/models";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Upload, Phone, Mail, Search, Building2, GraduationCap } from "lucide-react";
 import { LeadImport } from "@/components/leads/LeadImport";
 import { LeadForm } from "@/components/leads/LeadForm";
 import { LeadFilters } from "@/components/leads/LeadFilters";
 import { LeadListTable } from "@/components/leads/LeadListTable";
 import { LeadLimitSelector } from "@/components/leads/LeadLimitSelector";
-import { Badge } from "@/components/ui/badge";
 import { startOfDay, endOfDay, subDays, startOfWeek, startOfMonth } from "date-fns";
 import mongoose from "mongoose";
 
@@ -195,46 +193,47 @@ export default async function LeadsPage({
   const isGM = ["super_admin", "general_manager", "admin"].includes(user.role);
 
   return (
-    <div className="space-y-8 pb-10">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div className="flex flex-col gap-4 pb-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pl-10 md:pl-0">
         <div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-slate-900">Leads Management</h1>
-          <p className="text-slate-500 mt-1">Track and engage with your potential customers.</p>
+          <h1 className="text-lg font-bold text-slate-900 leading-tight">Leads Management</h1>
+          <p className="text-xs text-slate-400 mt-0.5">Track and engage with your potential customers.</p>
         </div>
-        <div className="flex flex-wrap gap-3">
-          <LeadForm 
-            pipelines={pipelines.map(p => ({ id: p._id.toString(), name: p.name }))} 
-            courses={coursesForForm}
-            universities={universities.map(u => ({ id: u._id.toString(), name: u.name }))}
-          />
-        </div>
+        <LeadForm
+          pipelines={pipelines.map(p => ({ id: p._id.toString(), name: p.name }))}
+          courses={coursesForForm}
+          universities={universities.map(u => ({ id: u._id.toString(), name: u.name }))}
+        />
       </div>
 
-      <LeadFilters 
-        initialFilters={sp}
-        teamMembers={teamMembers.map(m => ({ id: m._id.toString(), name: m.name }))}
-        pipelines={pipelines.map(p => ({ id: p._id.toString(), name: p.name }))}
-        courses={coursesForFilter}
-        universities={universities.map(u => ({ id: u._id.toString(), name: u.name }))}
-        savedFilters={savedFilters.map(f => ({ id: f._id.toString(), name: f.name, filters: f.filters }))}
-      />
-
-      <Card className="border-none shadow-xl bg-white/50 backdrop-blur-sm overflow-hidden">
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle className="text-xl font-bold">Leads List</CardTitle>
-            <CardDescription>Showing {leads.length} leads matching filters.</CardDescription>
-          </div>
-          <div className="flex items-center gap-3">
-            <LeadLimitSelector />
-            <div className="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
-              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-              <span className="text-xs font-bold text-slate-600 uppercase tracking-wider">{leads.length} Total</span>
+      <Card className="border border-slate-100 shadow-sm bg-white overflow-hidden">
+        <CardHeader className="py-3 px-4 border-b border-slate-100 space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <CardTitle className="text-sm font-bold text-slate-900">Leads List</CardTitle>
+              <CardDescription className="text-xs">Showing {leads.length} leads matching filters.</CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 bg-slate-100 px-2.5 py-1 rounded-full">
+                <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">{leads.length} Total</span>
+              </div>
+              <LeadLimitSelector />
             </div>
           </div>
+          <LeadFilters
+            initialFilters={sp}
+            teamMembers={teamMembers.map(m => ({ id: m._id.toString(), name: m.name }))}
+            pipelines={pipelines.map(p => ({ id: p._id.toString(), name: p.name }))}
+            courses={coursesForFilter}
+            universities={universities.map(u => ({ id: u._id.toString(), name: u.name }))}
+            savedFilters={savedFilters.map(f => ({ id: f._id.toString(), name: f.name, filters: f.filters }))}
+            embedded
+          />
         </CardHeader>
         <CardContent className="p-0">
-          <LeadListTable 
+          <LeadListTable
             leads={JSON.parse(JSON.stringify(leads))}
             teamMembers={teamMembers.map(m => ({ id: m._id.toString(), name: m.name }))}
             pipelines={pipelines.map(p => ({ id: p._id.toString(), name: p.name }))}

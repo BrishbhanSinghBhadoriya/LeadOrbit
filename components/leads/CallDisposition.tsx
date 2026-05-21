@@ -16,11 +16,25 @@ const DISPOSITIONS = {
   connected: [
     {
       name: "Interested",
-      subs: ["Wants Callback", "Need Course Details", "Need Fee Details", "Need Brochure", "Need Scholarship Info", "Ready for Admission", "Need EMI Details"]
+      subs: [
+        "Requested Callback",
+        "Asked for Course Details",
+        "Asked for Fee Structure",
+        "Requested Brochure",
+        "Asked for Scholarship Options",
+        "Ready for Admission Discussion",
+        "Asked for EMI Options"
+      ]
     },
     {
       name: "Follow-Up",
-      subs: ["Call Tomorrow", "Call Next Week", "Busy Right Now", "Parent Discussion Pending", "Need Time to Decide"]
+      subs: [
+        "Follow-up Tomorrow",
+        "Follow-up Next Week",
+        "Currently Busy",
+        "Parent Discussion Pending",
+        "Needs Time to Decide"
+      ]
     },
     {
       name: "Admission Process",
@@ -28,29 +42,29 @@ const DISPOSITIONS = {
     },
     {
       name: "Hot Lead",
-      subs: ["Ready to Pay", "Immediate Admission", "Wants Counselor Support"]
+      subs: ["Ready to Pay", "Wants Immediate Admission", "Needs Counselor Assistance"]
     },
     {
       name: "Warm Lead",
-      subs: ["Interested but Comparing", "Thinking About Admission"]
+      subs: ["Interested but Comparing Options", "Actively Considering Admission"]
     },
     {
       name: "Cold Lead",
-      subs: ["Low Interest", "Not Responding Properly"]
+      subs: ["Low Interest", "Not Engaging in Conversation"]
     }
   ],
   not_connected: [
-    { name: "No Answer", subs: ["Normal No Answer"] },
-    { name: "Switched Off", subs: ["Normal Switched Off"] },
-    { name: "Busy", subs: ["Normal Busy"] },
-    { name: "Invalid Number", subs: ["Normal Invalid Number"] },
-    { name: "Call Disconnected", subs: ["Normal Disconnected"] },
-    { name: "Wrong Number", subs: ["Normal Wrong Number"] },
-    { name: "Out of Coverage", subs: ["Normal Out of Coverage"] },
-    { name: "Number Not Reachable", subs: ["Normal Not Reachable"] },
-    { name: "Call Back Later", subs: ["Normal Call Back Later"] },
-    { name: "Spam Lead", subs: ["Normal Spam Lead"] },
-    { name: "Duplicate Lead", subs: ["Normal Duplicate Lead"] }
+    { name: "No Answer", subs: ["No Response on Call"] },
+    { name: "Switched Off", subs: ["Phone Switched Off"] },
+    { name: "Busy", subs: ["Line Busy"] },
+    { name: "Invalid Number", subs: ["Invalid Contact Number"] },
+    { name: "Call Disconnected", subs: ["Call Dropped During Conversation"] },
+    { name: "Wrong Number", subs: ["Number Belongs to Someone Else"] },
+    { name: "Out of Coverage", subs: ["Number Out of Coverage Area"] },
+    { name: "Number Not Reachable", subs: ["Number Not Reachable Currently"] },
+    { name: "Call Back Later", subs: ["Requested Callback Later"] },
+    { name: "Spam Lead", subs: ["Irrelevant / Promotional Enquiry"] },
+    { name: "Duplicate Lead", subs: ["Duplicate Enquiry Already Exists"] }
   ]
 };
 

@@ -65,6 +65,7 @@ export const PERMISSIONS: Record<Role, Permission[]> = {
     "meetings.schedule",
     "reports.view.all",
     "users.view.all",
+    "settings.manage",
   ],
   general_manager: [
     "leads.view.all",
@@ -88,6 +89,7 @@ export const PERMISSIONS: Record<Role, Permission[]> = {
     "courses.manage",
     "reports.view.all",
     "meetings.schedule",
+    "settings.manage",
   ],
   manager: [
     "leads.view.team",

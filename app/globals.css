@@ -3,15 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --background: 20 100% 97%; /* Peach background */
+  --background: 20 100% 97%;
   --foreground: 222.2 84% 4.9%;
   --card: 0 0% 100%;
   --card-foreground: 222.2 84% 4.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
-  --primary: 15 85% 60%; /* Deep Peach/Coral for buttons */
+  --primary: 15 85% 60%;
   --primary-foreground: 210 40% 98%;
-  --secondary: 25 100% 90%; /* Lighter Peach */
+  --secondary: 25 100% 90%;
   --secondary-foreground: 15 85% 30%;
   --muted: 25 100% 94%;
   --muted-foreground: 215.4 16.3% 46.9%;
@@ -48,63 +48,57 @@
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-  
-  /* Remove bold and fix colors globally */
-  * {
-    font-weight: 400 !important;
-  }
-  
-  .text-slate-400, .text-slate-500, .text-slate-600, .text-gray-400, .text-gray-500, .text-muted-foreground {
-    color: #000000 !important;
-  }
+  * { @apply border-border; }
+  body { @apply bg-background text-foreground; }
+}
 
-  /* Specific professional themes with diverse color combinations */
-  :root[data-theme='minimal'] {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
-    --primary: 0 0% 0%;
-    --border: 0 0% 90%;
-    --card: 0 0% 100%;
-  }
-  :root[data-theme='ocean'] {
-    --background: 215 100% 97%; /* Very Light Blue */
-    --foreground: 222 47% 11%;
-    --primary: 217 91% 60%; /* Bright Blue */
-    --border: 214 32% 91%;
-    --card: 0 0% 100%;
-  }
-  :root[data-theme='sunset'] {
-    --background: 30 100% 98%; /* Soft Cream/Peach */
-    --foreground: 20 14% 4%;
-    --primary: 15 85% 60%; /* Coral/Orange */
-    --border: 20 30% 90%;
-    --card: 0 0% 100%;
-  }
-  :root[data-theme='forest'] {
-    --background: 140 30% 98%; /* Pale Mint */
-    --foreground: 160 84% 10%;
-    --primary: 160 84% 39%; /* Deep Emerald */
-    --border: 150 30% 90%;
-    --card: 0 0% 100%;
-  }
-  :root[data-theme='lavender'] {
-    --background: 260 40% 98%; /* Pale Lavender */
-    --foreground: 260 84% 10%;
-    --primary: 262 83% 58%; /* Rich Purple */
-    --border: 260 30% 90%;
-    --card: 0 0% 100%;
-  }
-  :root[data-theme='midnight'] {
-    --background: 222 47% 11%; /* Deep Navy */
-    --foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --border: 217 32% 20%;
-    --card: 222 47% 13%;
-  }
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 99px; }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+}
+
+/* Theme overrides */
+:root[data-theme='minimal'] {
+  --background: 0 0% 100%;
+  --foreground: 222 47% 11%;
+  --primary: 222 47% 30%;
+  --border: 0 0% 90%;
+  --card: 0 0% 100%;
+}
+:root[data-theme='ocean'] {
+  --background: 215 100% 97%;
+  --foreground: 222 47% 11%;
+  --primary: 217 91% 60%;
+  --border: 214 32% 91%;
+  --card: 0 0% 100%;
+}
+:root[data-theme='sunset'] {
+  --background: 30 100% 98%;
+  --foreground: 20 14% 4%;
+  --primary: 15 85% 60%;
+  --border: 20 30% 90%;
+  --card: 0 0% 100%;
+}
+:root[data-theme='forest'] {
+  --background: 140 30% 98%;
+  --foreground: 160 84% 10%;
+  --primary: 160 84% 39%;
+  --border: 150 30% 90%;
+  --card: 0 0% 100%;
+}
+:root[data-theme='lavender'] {
+  --background: 260 40% 98%;
+  --foreground: 260 84% 10%;
+  --primary: 262 83% 58%;
+  --border: 260 30% 90%;
+  --card: 0 0% 100%;
+}
+:root[data-theme='midnight'] {
+  --background: 222 47% 11%;
+  --foreground: 210 40% 98%;
+  --primary: 217 91% 60%;
+  --border: 217 32% 20%;
+  --card: 222 47% 13%;
 }
