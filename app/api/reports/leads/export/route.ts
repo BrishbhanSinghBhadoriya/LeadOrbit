@@ -19,7 +19,7 @@ export async function GET() {
     Owner: l.assignedTo?.name || "",
   }));
   const buf = excelBuffer(rows, "Leads");
-  return new NextResponse(buf, {
+  return new NextResponse(new Uint8Array(buf), {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "Content-Disposition": 'attachment; filename="leads-report.xlsx"',

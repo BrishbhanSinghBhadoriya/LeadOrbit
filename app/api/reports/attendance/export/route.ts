@@ -23,7 +23,7 @@ export async function GET() {
     };
   });
   const buf = excelBuffer(rows, "Attendance");
-  return new NextResponse(buf, {
+  return new NextResponse(new Uint8Array(buf), {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "Content-Disposition": 'attachment; filename="attendance-report.xlsx"',

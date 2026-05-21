@@ -32,7 +32,7 @@ export async function GET() {
   });
 
   const buf = excelBuffer(rows, "Call Report");
-  return new NextResponse(buf, {
+  return new NextResponse(new Uint8Array(buf), {
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "Content-Disposition": `attachment; filename="call-report-${format(new Date(), "yyyy-MM-dd")}.xlsx"`,
