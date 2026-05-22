@@ -1,5 +1,5 @@
 "use client";
-import { Bell, Search, Palette, Check, Trash2, Clock, LogOut, User, Menu } from "lucide-react";
+import { Bell, Search, Trash2, Clock, LogOut, User, Check } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import type { JwtPayload } from "@/types";
 import { useEffect, useState, useRef } from "react";
@@ -8,51 +8,66 @@ import { motion, AnimatePresence } from "framer-motion";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 
-const THEMES = [
-  { id: "minimal",   name: "Minimal White",    color: "bg-white" },
-  { id: "ocean",     name: "Ocean Blue",        color: "bg-blue-400" },
-  { id: "sunset",    name: "Sunset Coral",      color: "bg-orange-400" },
-  { id: "forest",    name: "Forest Emerald",    color: "bg-emerald-500" },
-  { id: "lavender",  name: "Royal Lavender",    color: "bg-purple-500" },
-  { id: "midnight",  name: "Midnight Dark",     color: "bg-slate-900" },
-];
+const TEXT_COLOR_MAP: Record<string, string> = {
+  "txt-black":    "#0a0a0a",
+  "txt-charcoal": "#1e293b",
+  "txt-navy":     "#0f172a",
+  "txt-blue":     "#1d4ed8",
+  "txt-indigo":   "#4338ca",
+  "txt-purple":   "#6d28d9",
+  "txt-teal":     "#0f766e",
+  "txt-green":    "#15803d",
+  "txt-brown":    "#78350f",
+  "txt-rose":     "#9f1239",
+  "txt-white":    "#f1f5f9",
+  "txt-silver":   "#94a3b8",
+  "txt-gold":     "#b45309",
+};
 
 export function Topbar({ user }: { user: JwtPayload }) {
-  const [theme, setTheme]                   = useState("minimal");
-  const [showThemes, setShowThemes]         = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [showProfile, setShowProfile]       = useState(false);
+  const [showProfile,       setShowProfile]       = useState(false);
   const { notifications, unreadCount, markAllAsRead, clearNotifications } = useSocket();
   const notifRef   = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const themeRef   = useRef<HTMLDivElement>(null);
 
+  // Load & apply saved theme settings on mount
   useEffect(() => {
-    const saved = localStorage.getItem("crm-theme") || "minimal";
-    setTheme(saved);
-    document.documentElement.setAttribute("data-theme", saved);
+    const color  = localStorage.getItem("crm-theme")      || "minimal";
+    const bg     = localStorage.getItem("crm-bg-theme")   || "bg-none";
+    const txt    = localStorage.getItem("crm-txt-color")  || "txt-default";
+    const custom = localStorage.getItem("crm-txt-custom") || "#1e293b";
+
+    const root = document.documentElement;
+    root.setAttribute("data-theme", color);
+    root.setAttribute("data-bg",    bg);
+    root.setAttribute("data-txt",   txt);
+
+    if (txt === "txt-custom") {
+      root.style.setProperty("--user-text", custom);
+    } else if (TEXT_COLOR_MAP[txt]) {
+      root.style.setProperty("--user-text", TEXT_COLOR_MAP[txt]);
+    } else {
+      root.style.removeProperty("--user-text");
+    }
   }, []);
 
   useEffect(() => {
     function outside(e: MouseEvent) {
       if (notifRef.current   && !notifRef.current.contains(e.target as Node))   setShowNotifications(false);
       if (profileRef.current && !profileRef.current.contains(e.target as Node)) setShowProfile(false);
-      if (themeRef.current   && !themeRef.current.contains(e.target as Node))   setShowThemes(false);
     }
     document.addEventListener("mousedown", outside);
     return () => document.removeEventListener("mousedown", outside);
   }, []);
 
-  const changeTheme = (t: string) => {
-    setTheme(t);
-    document.documentElement.setAttribute("data-theme", t);
-    localStorage.setItem("crm-theme", t);
-    setShowThemes(false);
-  };
-
   const handleLogout = async () => {
     try {
-      await fetch("/api/auth?action=logout", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
+      await fetch("/api/auth?action=logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
     } finally {
       window.location.href = "/login";
     }
@@ -61,61 +76,26 @@ export function Topbar({ user }: { user: JwtPayload }) {
   const initials = (user.name ?? user.email).slice(0, 2).toUpperCase();
 
   return (
-    <header className="h-14 border-b bg-background flex items-center gap-2 px-4 relative z-40 shrink-0">
-      {/* Mobile spacer for hamburger button */}
+    <header className="h-14 border-b bg-background/80 backdrop-blur-sm flex items-center gap-2 px-4 relative z-40 shrink-0">
+      {/* Mobile hamburger spacer */}
       <div className="w-8 md:hidden shrink-0" />
 
-      {/* Search — hidden on very small screens, shown from sm */}
+      {/* Search */}
       <div className="relative flex-1 max-w-xs hidden sm:block">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
         <input
           placeholder="Search leads…"
-          className="w-full pl-9 pr-3 h-8 text-xs rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40"
+          className="w-full pl-9 pr-3 h-8 text-xs rounded-lg border border-slate-200 bg-slate-50/80 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/40"
         />
       </div>
 
-      {/* Right actions */}
       <div className="flex items-center gap-1 ml-auto">
-
-        {/* Theme */}
-        <div className="relative" ref={themeRef}>
-          <button
-            onClick={() => { setShowThemes(!showThemes); setShowNotifications(false); setShowProfile(false); }}
-            className="h-8 w-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-600 transition-colors"
-            title="Themes"
-          >
-            <Palette className="h-4 w-4" />
-          </button>
-          <AnimatePresence>
-            {showThemes && (
-              <motion.div
-                initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 6, scale: 0.95 }}
-                className="absolute right-0 mt-1 w-44 bg-white border border-slate-200 shadow-xl rounded-xl p-1.5 z-[60]"
-              >
-                {THEMES.map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => changeTheme(t.id)}
-                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs transition-colors ${
-                      theme === t.id ? "bg-primary/10 text-primary font-semibold" : "hover:bg-slate-50 text-slate-700"
-                    }`}
-                  >
-                    <div className={`h-3 w-3 rounded-full border border-slate-200 shrink-0 ${t.color}`} />
-                    {t.name}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
 
         {/* Notifications */}
         <div className="relative" ref={notifRef}>
           <button
-            onClick={() => { setShowNotifications(!showNotifications); setShowThemes(false); setShowProfile(false); }}
-            className="h-8 w-8 rounded-lg hover:bg-slate-100 flex items-center justify-center relative transition-colors"
+            onClick={() => { setShowNotifications(!showNotifications); setShowProfile(false); }}
+            className="h-8 w-8 rounded-lg hover:bg-slate-100/80 flex items-center justify-center relative transition-colors"
             aria-label="Notifications"
           >
             <Bell className="h-4 w-4 text-slate-600" />
@@ -136,8 +116,12 @@ export function Topbar({ user }: { user: JwtPayload }) {
                 <div className="px-4 py-3 border-b flex items-center justify-between bg-slate-50">
                   <h3 className="font-semibold text-xs text-slate-800">Notifications</h3>
                   <div className="flex gap-1">
-                    <button onClick={markAllAsRead} className="p-1.5 rounded-md hover:bg-slate-200 text-slate-500" title="Mark all read"><Check className="h-3.5 w-3.5" /></button>
-                    <button onClick={clearNotifications} className="p-1.5 rounded-md hover:bg-slate-200 text-slate-500" title="Clear all"><Trash2 className="h-3.5 w-3.5" /></button>
+                    <button onClick={markAllAsRead} className="p-1.5 rounded-md hover:bg-slate-200 text-slate-500" title="Mark all read">
+                      <Check className="h-3.5 w-3.5" />
+                    </button>
+                    <button onClick={clearNotifications} className="p-1.5 rounded-md hover:bg-slate-200 text-slate-500" title="Clear all">
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
                   </div>
                 </div>
                 <div className="max-h-[360px] overflow-y-auto">
@@ -178,8 +162,8 @@ export function Topbar({ user }: { user: JwtPayload }) {
         {/* Profile */}
         <div className="relative" ref={profileRef}>
           <button
-            onClick={() => { setShowProfile(!showProfile); setShowNotifications(false); setShowThemes(false); }}
-            className="flex items-center gap-2 h-8 pl-1 pr-2 rounded-lg hover:bg-slate-100 transition-colors"
+            onClick={() => { setShowProfile(!showProfile); setShowNotifications(false); }}
+            className="flex items-center gap-2 h-8 pl-1 pr-2 rounded-lg hover:bg-slate-100/80 transition-colors"
           >
             <Avatar className="h-7 w-7 border border-slate-200 shrink-0">
               <AvatarFallback className="bg-primary/10 text-primary text-[11px] font-bold">{initials}</AvatarFallback>
@@ -209,12 +193,19 @@ export function Topbar({ user }: { user: JwtPayload }) {
                   </div>
                 </div>
                 <div className="p-1.5">
-                  <Link href="/profile" onClick={() => setShowProfile(false)} className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-xs font-medium text-slate-700 transition-colors">
+                  <Link
+                    href="/profile"
+                    onClick={() => setShowProfile(false)}
+                    className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-slate-50 text-xs font-medium text-slate-700 transition-colors"
+                  >
                     <User className="h-3.5 w-3.5 text-slate-500" />
                     My Profile
                   </Link>
                   <div className="my-1 border-t border-slate-100" />
-                  <button onClick={handleLogout} className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-red-50 text-xs font-medium text-red-600 transition-colors">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-red-50 text-xs font-medium text-red-600 transition-colors"
+                  >
                     <LogOut className="h-3.5 w-3.5" />
                     Logout
                   </button>

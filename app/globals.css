@@ -2,49 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Base CSS variables ───────────────────────────────────────────────────── */
 :root {
-  --background: 20 100% 97%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --popover: 0 0% 100%;
+  --background:         20 100% 97%;
+  --foreground:         222.2 84% 4.9%;
+  --card:               0 0% 100%;
+  --card-foreground:    222.2 84% 4.9%;
+  --popover:            0 0% 100%;
   --popover-foreground: 222.2 84% 4.9%;
-  --primary: 15 85% 60%;
+  --primary:            15 85% 60%;
   --primary-foreground: 210 40% 98%;
-  --secondary: 25 100% 90%;
+  --secondary:          25 100% 90%;
   --secondary-foreground: 15 85% 30%;
-  --muted: 25 100% 94%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 25 100% 92%;
-  --accent-foreground: 15 85% 40%;
-  --destructive: 0 84.2% 60.2%;
+  --muted:              25 100% 94%;
+  --muted-foreground:   215.4 16.3% 46.9%;
+  --accent:             25 100% 92%;
+  --accent-foreground:  15 85% 40%;
+  --destructive:        0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
-  --border: 25 30% 85%;
-  --input: 25 30% 85%;
-  --ring: 15 85% 60%;
-  --radius: 0.5rem;
-}
-
-.dark {
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 217.2 91.2% 59.8%;
-  --primary-foreground: 222.2 47.4% 11.2%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 224.3 76.3% 48%;
+  --border:             25 30% 85%;
+  --input:              25 30% 85%;
+  --ring:               15 85% 60%;
+  --radius:             0.5rem;
 }
 
 @layer base {
@@ -59,46 +38,685 @@
   .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
 }
 
-/* Theme overrides */
+/* ════════════════════════════════════════════════════════════════════════════
+   COLOR THEMES
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Minimal White ── */
 :root[data-theme='minimal'] {
-  --background: 0 0% 100%;
-  --foreground: 222 47% 11%;
-  --primary: 222 47% 30%;
-  --border: 0 0% 90%;
-  --card: 0 0% 100%;
+  --background:         0 0% 100%;
+  --foreground:         222 47% 11%;
+  --card:               0 0% 100%;
+  --card-foreground:    222 47% 11%;
+  --popover:            0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+  --primary:            222 47% 30%;
+  --primary-foreground: 0 0% 100%;
+  --muted:              0 0% 96%;
+  --muted-foreground:   222 20% 40%;
+  --border:             0 0% 90%;
+  --input:              0 0% 90%;
 }
+
+/* ── Ocean Blue ── */
 :root[data-theme='ocean'] {
-  --background: 215 100% 97%;
-  --foreground: 222 47% 11%;
-  --primary: 217 91% 60%;
-  --border: 214 32% 91%;
-  --card: 0 0% 100%;
+  --background:         215 60% 97%;
+  --foreground:         222 47% 8%;
+  --card:               0 0% 100%;
+  --card-foreground:    222 47% 8%;
+  --popover:            0 0% 100%;
+  --popover-foreground: 222 47% 8%;
+  --primary:            217 91% 55%;
+  --primary-foreground: 0 0% 100%;
+  --muted:              215 50% 93%;
+  --muted-foreground:   222 25% 38%;
+  --border:             214 40% 88%;
+  --input:              214 40% 88%;
 }
+
+/* ── Sunset Coral ── */
 :root[data-theme='sunset'] {
-  --background: 30 100% 98%;
-  --foreground: 20 14% 4%;
-  --primary: 15 85% 60%;
-  --border: 20 30% 90%;
-  --card: 0 0% 100%;
+  --background:         30 80% 97%;
+  --foreground:         20 30% 8%;
+  --card:               0 0% 100%;
+  --card-foreground:    20 30% 8%;
+  --popover:            0 0% 100%;
+  --popover-foreground: 20 30% 8%;
+  --primary:            15 90% 58%;
+  --primary-foreground: 0 0% 100%;
+  --muted:              30 60% 93%;
+  --muted-foreground:   20 20% 38%;
+  --border:             20 35% 88%;
+  --input:              20 35% 88%;
 }
+
+/* ── Forest Green ── */
 :root[data-theme='forest'] {
-  --background: 140 30% 98%;
-  --foreground: 160 84% 10%;
-  --primary: 160 84% 39%;
-  --border: 150 30% 90%;
-  --card: 0 0% 100%;
+  --background:         140 35% 97%;
+  --foreground:         160 50% 8%;
+  --card:               0 0% 100%;
+  --card-foreground:    160 50% 8%;
+  --popover:            0 0% 100%;
+  --popover-foreground: 160 50% 8%;
+  --primary:            160 70% 35%;
+  --primary-foreground: 0 0% 100%;
+  --muted:              140 25% 93%;
+  --muted-foreground:   160 25% 38%;
+  --border:             150 30% 88%;
+  --input:              150 30% 88%;
 }
+
+/* ── Royal Lavender ── */
 :root[data-theme='lavender'] {
-  --background: 260 40% 98%;
-  --foreground: 260 84% 10%;
-  --primary: 262 83% 58%;
-  --border: 260 30% 90%;
-  --card: 0 0% 100%;
+  --background:         260 45% 97%;
+  --foreground:         260 50% 8%;
+  --card:               0 0% 100%;
+  --card-foreground:    260 50% 8%;
+  --popover:            0 0% 100%;
+  --popover-foreground: 260 50% 8%;
+  --primary:            262 80% 55%;
+  --primary-foreground: 0 0% 100%;
+  --muted:              260 25% 93%;
+  --muted-foreground:   260 25% 40%;
+  --border:             260 30% 88%;
+  --input:              260 30% 88%;
 }
+
+/* ── Rose Gold ── */
+:root[data-theme='rose'] {
+  --background:         350 60% 97%;
+  --foreground:         340 40% 8%;
+  --card:               0 0% 100%;
+  --card-foreground:    340 40% 8%;
+  --popover:            0 0% 100%;
+  --popover-foreground: 340 40% 8%;
+  --primary:            345 75% 55%;
+  --primary-foreground: 0 0% 100%;
+  --muted:              350 35% 93%;
+  --muted-foreground:   340 20% 40%;
+  --border:             350 30% 88%;
+  --input:              350 30% 88%;
+}
+
+/* ── Deep Teal ── */
+:root[data-theme='teal'] {
+  --background:         175 50% 97%;
+  --foreground:         180 50% 8%;
+  --card:               0 0% 100%;
+  --card-foreground:    180 50% 8%;
+  --popover:            0 0% 100%;
+  --popover-foreground: 180 50% 8%;
+  --primary:            175 80% 32%;
+  --primary-foreground: 0 0% 100%;
+  --muted:              175 30% 93%;
+  --muted-foreground:   180 25% 38%;
+  --border:             175 30% 88%;
+  --input:              175 30% 88%;
+}
+
+/* ── Midnight Dark ── */
 :root[data-theme='midnight'] {
-  --background: 222 47% 11%;
-  --foreground: 210 40% 98%;
-  --primary: 217 91% 60%;
-  --border: 217 32% 20%;
-  --card: 222 47% 13%;
+  --background:         222 47% 10%;
+  --foreground:         210 40% 95%;
+  --card:               222 47% 14%;
+  --card-foreground:    210 40% 95%;
+  --popover:            222 47% 12%;
+  --popover-foreground: 210 40% 95%;
+  --primary:            217 91% 65%;
+  --primary-foreground: 222 47% 10%;
+  --secondary:          217 32% 22%;
+  --secondary-foreground: 210 40% 90%;
+  --muted:              217 32% 18%;
+  --muted-foreground:   215 25% 62%;
+  --accent:             217 32% 22%;
+  --accent-foreground:  210 40% 90%;
+  --destructive:        0 62% 50%;
+  --destructive-foreground: 210 40% 98%;
+  --border:             217 32% 24%;
+  --input:              217 32% 20%;
+  --ring:               217 91% 65%;
+}
+
+/* Midnight: override hardcoded Tailwind colors */
+:root[data-theme='midnight'] .text-slate-900,
+:root[data-theme='midnight'] .text-slate-800 { color: hsl(210 40% 93%) !important; }
+:root[data-theme='midnight'] .text-slate-700,
+:root[data-theme='midnight'] .text-slate-600 { color: hsl(215 25% 75%) !important; }
+:root[data-theme='midnight'] .text-slate-500,
+:root[data-theme='midnight'] .text-slate-400 { color: hsl(215 20% 58%) !important; }
+:root[data-theme='midnight'] .text-slate-300  { color: hsl(215 20% 42%) !important; }
+:root[data-theme='midnight'] .bg-white         { background-color: hsl(222 47% 14%) !important; }
+:root[data-theme='midnight'] .bg-slate-50,
+:root[data-theme='midnight'] .bg-slate-50\/80,
+:root[data-theme='midnight'] .bg-slate-50\/60  { background-color: hsl(222 47% 12%) !important; }
+:root[data-theme='midnight'] .bg-slate-100     { background-color: hsl(217 32% 20%) !important; }
+:root[data-theme='midnight'] .bg-slate-200     { background-color: hsl(217 32% 25%) !important; }
+:root[data-theme='midnight'] .border-slate-100,
+:root[data-theme='midnight'] .border-slate-200 { border-color: hsl(217 32% 24%) !important; }
+:root[data-theme='midnight'] .hover\:bg-slate-50:hover,
+:root[data-theme='midnight'] .hover\:bg-slate-100:hover { background-color: hsl(217 32% 20%) !important; }
+:root[data-theme='midnight'] aside,
+:root[data-theme='midnight'] header { background-color: hsl(222 47% 12%) !important; border-color: hsl(217 32% 22%) !important; }
+:root[data-theme='midnight'] input,
+:root[data-theme='midnight'] select,
+:root[data-theme='midnight'] textarea { background-color: hsl(217 32% 17%) !important; color: hsl(210 40% 90%) !important; border-color: hsl(217 32% 27%) !important; }
+:root[data-theme='midnight'] input::placeholder,
+:root[data-theme='midnight'] textarea::placeholder { color: hsl(215 20% 48%) !important; }
+:root[data-theme='midnight'] .custom-scrollbar::-webkit-scrollbar-thumb { background: hsl(217 32% 30%); }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   THEME TEXT COLOR OVERRIDES
+   Har theme ke saath text-slate-* classes ka color change hota hai
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Ocean Blue — navy text tones ── */
+:root[data-theme='ocean'] .text-slate-900,
+:root[data-theme='ocean'] .text-slate-800 { color: hsl(222 60% 12%) !important; }
+:root[data-theme='ocean'] .text-slate-700,
+:root[data-theme='ocean'] .text-slate-600 { color: hsl(220 45% 28%) !important; }
+:root[data-theme='ocean'] .text-slate-500,
+:root[data-theme='ocean'] .text-slate-400 { color: hsl(218 35% 45%) !important; }
+:root[data-theme='ocean'] .text-slate-300  { color: hsl(216 30% 62%) !important; }
+
+/* ── Sunset Coral — warm brown/amber text ── */
+:root[data-theme='sunset'] .text-slate-900,
+:root[data-theme='sunset'] .text-slate-800 { color: hsl(20 40% 12%) !important; }
+:root[data-theme='sunset'] .text-slate-700,
+:root[data-theme='sunset'] .text-slate-600 { color: hsl(18 30% 28%) !important; }
+:root[data-theme='sunset'] .text-slate-500,
+:root[data-theme='sunset'] .text-slate-400 { color: hsl(16 22% 45%) !important; }
+:root[data-theme='sunset'] .text-slate-300  { color: hsl(14 18% 60%) !important; }
+
+/* ── Forest Green — deep green text ── */
+:root[data-theme='forest'] .text-slate-900,
+:root[data-theme='forest'] .text-slate-800 { color: hsl(160 55% 10%) !important; }
+:root[data-theme='forest'] .text-slate-700,
+:root[data-theme='forest'] .text-slate-600 { color: hsl(158 40% 22%) !important; }
+:root[data-theme='forest'] .text-slate-500,
+:root[data-theme='forest'] .text-slate-400 { color: hsl(155 28% 38%) !important; }
+:root[data-theme='forest'] .text-slate-300  { color: hsl(152 22% 55%) !important; }
+
+/* ── Royal Lavender — deep purple text ── */
+:root[data-theme='lavender'] .text-slate-900,
+:root[data-theme='lavender'] .text-slate-800 { color: hsl(260 55% 12%) !important; }
+:root[data-theme='lavender'] .text-slate-700,
+:root[data-theme='lavender'] .text-slate-600 { color: hsl(258 40% 28%) !important; }
+:root[data-theme='lavender'] .text-slate-500,
+:root[data-theme='lavender'] .text-slate-400 { color: hsl(256 28% 45%) !important; }
+:root[data-theme='lavender'] .text-slate-300  { color: hsl(254 22% 60%) !important; }
+
+/* ── Rose Gold — deep rose text ── */
+:root[data-theme='rose'] .text-slate-900,
+:root[data-theme='rose'] .text-slate-800 { color: hsl(340 45% 12%) !important; }
+:root[data-theme='rose'] .text-slate-700,
+:root[data-theme='rose'] .text-slate-600 { color: hsl(338 32% 28%) !important; }
+:root[data-theme='rose'] .text-slate-500,
+:root[data-theme='rose'] .text-slate-400 { color: hsl(336 22% 45%) !important; }
+:root[data-theme='rose'] .text-slate-300  { color: hsl(334 18% 60%) !important; }
+
+/* ── Deep Teal — teal/cyan text ── */
+:root[data-theme='teal'] .text-slate-900,
+:root[data-theme='teal'] .text-slate-800 { color: hsl(180 55% 10%) !important; }
+:root[data-theme='teal'] .text-slate-700,
+:root[data-theme='teal'] .text-slate-600 { color: hsl(178 40% 22%) !important; }
+:root[data-theme='teal'] .text-slate-500,
+:root[data-theme='teal'] .text-slate-400 { color: hsl(176 28% 38%) !important; }
+:root[data-theme='teal'] .text-slate-300  { color: hsl(174 22% 55%) !important; }
+
+/* ── Minimal White — pure neutral text (default slate) ── */
+:root[data-theme='minimal'] .text-slate-900,
+:root[data-theme='minimal'] .text-slate-800 { color: hsl(222 47% 10%) !important; }
+:root[data-theme='minimal'] .text-slate-700,
+:root[data-theme='minimal'] .text-slate-600 { color: hsl(220 15% 30%) !important; }
+:root[data-theme='minimal'] .text-slate-500,
+:root[data-theme='minimal'] .text-slate-400 { color: hsl(218 12% 50%) !important; }
+:root[data-theme='minimal'] .text-slate-300  { color: hsl(216 10% 68%) !important; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   BACKGROUND THEMES  (applied to .theme-bg wrapper)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+.theme-bg { position: relative; }
+.theme-bg > main { position: relative; z-index: 1; }
+
+/* ── No Background (default) ── */
+:root[data-bg='bg-none'] .theme-bg { background: transparent; }
+
+/* ── Aurora Gradient ── */
+:root[data-bg='bg-gradient1'] .theme-bg {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 40%, #6B8DD6 70%, #8E37D7 100%);
+}
+:root[data-bg='bg-gradient1'] .theme-bg > main { background: transparent; }
+:root[data-bg='bg-gradient1'] .theme-bg header { background: rgba(102,126,234,0.85) !important; backdrop-filter: blur(12px); border-color: rgba(255,255,255,0.15) !important; }
+:root[data-bg='bg-gradient1'] .bg-white { background: rgba(255,255,255,0.92) !important; backdrop-filter: blur(8px); }
+:root[data-bg='bg-gradient1'] .bg-slate-50,
+:root[data-bg='bg-gradient1'] .bg-slate-50\/80 { background: rgba(255,255,255,0.75) !important; backdrop-filter: blur(6px); }
+
+/* ── Sunset Gradient ── */
+:root[data-bg='bg-gradient2'] .theme-bg {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 30%, #fda085 60%, #f6d365 100%);
+}
+:root[data-bg='bg-gradient2'] .theme-bg header { background: rgba(245,87,108,0.82) !important; backdrop-filter: blur(12px); border-color: rgba(255,255,255,0.2) !important; }
+:root[data-bg='bg-gradient2'] .bg-white { background: rgba(255,255,255,0.93) !important; backdrop-filter: blur(8px); }
+:root[data-bg='bg-gradient2'] .bg-slate-50,
+:root[data-bg='bg-gradient2'] .bg-slate-50\/80 { background: rgba(255,255,255,0.78) !important; backdrop-filter: blur(6px); }
+
+/* ── Ocean Depth ── */
+:root[data-bg='bg-gradient3'] .theme-bg {
+  background: linear-gradient(135deg, #0f2027 0%, #203a43 40%, #2c5364 70%, #1a6b8a 100%);
+}
+:root[data-bg='bg-gradient3'] .theme-bg header { background: rgba(15,32,39,0.88) !important; backdrop-filter: blur(12px); border-color: rgba(255,255,255,0.1) !important; }
+:root[data-bg='bg-gradient3'] .bg-white { background: rgba(255,255,255,0.94) !important; backdrop-filter: blur(8px); }
+:root[data-bg='bg-gradient3'] .bg-slate-50,
+:root[data-bg='bg-gradient3'] .bg-slate-50\/80 { background: rgba(255,255,255,0.80) !important; backdrop-filter: blur(6px); }
+
+/* ── Forest Mist ── */
+:root[data-bg='bg-gradient4'] .theme-bg {
+  background: linear-gradient(135deg, #134e5e 0%, #71b280 40%, #a8edea 80%, #fed6e3 100%);
+}
+:root[data-bg='bg-gradient4'] .theme-bg header { background: rgba(19,78,94,0.85) !important; backdrop-filter: blur(12px); border-color: rgba(255,255,255,0.15) !important; }
+:root[data-bg='bg-gradient4'] .bg-white { background: rgba(255,255,255,0.93) !important; backdrop-filter: blur(8px); }
+:root[data-bg='bg-gradient4'] .bg-slate-50,
+:root[data-bg='bg-gradient4'] .bg-slate-50\/80 { background: rgba(255,255,255,0.78) !important; backdrop-filter: blur(6px); }
+
+/* ── Mesh Purple ── */
+:root[data-bg='bg-mesh1'] .theme-bg {
+  background-color: #e8d5f5;
+  background-image:
+    radial-gradient(at 40% 20%, hsla(280,80%,70%,0.6) 0px, transparent 50%),
+    radial-gradient(at 80% 0%,   hsla(240,80%,75%,0.5) 0px, transparent 50%),
+    radial-gradient(at 0% 50%,   hsla(300,70%,75%,0.5) 0px, transparent 50%),
+    radial-gradient(at 80% 50%,  hsla(220,80%,70%,0.5) 0px, transparent 50%),
+    radial-gradient(at 0% 100%,  hsla(260,80%,70%,0.5) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, hsla(200,80%,75%,0.4) 0px, transparent 50%);
+}
+:root[data-bg='bg-mesh1'] .theme-bg header { background: rgba(180,130,220,0.80) !important; backdrop-filter: blur(12px); border-color: rgba(255,255,255,0.2) !important; }
+:root[data-bg='bg-mesh1'] .bg-white { background: rgba(255,255,255,0.92) !important; backdrop-filter: blur(8px); }
+:root[data-bg='bg-mesh1'] .bg-slate-50,
+:root[data-bg='bg-mesh1'] .bg-slate-50\/80 { background: rgba(255,255,255,0.76) !important; backdrop-filter: blur(6px); }
+
+/* ── Mesh Gold ── */
+:root[data-bg='bg-mesh2'] .theme-bg {
+  background-color: #fef3c7;
+  background-image:
+    radial-gradient(at 40% 20%, hsla(40,100%,70%,0.6) 0px, transparent 50%),
+    radial-gradient(at 80% 0%,   hsla(20,90%,70%,0.5) 0px, transparent 50%),
+    radial-gradient(at 0% 50%,   hsla(50,90%,72%,0.5) 0px, transparent 50%),
+    radial-gradient(at 80% 50%,  hsla(10,85%,68%,0.5) 0px, transparent 50%),
+    radial-gradient(at 0% 100%,  hsla(35,90%,68%,0.5) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, hsla(55,85%,72%,0.4) 0px, transparent 50%);
+}
+:root[data-bg='bg-mesh2'] .theme-bg header { background: rgba(245,158,11,0.80) !important; backdrop-filter: blur(12px); border-color: rgba(255,255,255,0.2) !important; }
+:root[data-bg='bg-mesh2'] .bg-white { background: rgba(255,255,255,0.93) !important; backdrop-filter: blur(8px); }
+:root[data-bg='bg-mesh2'] .bg-slate-50,
+:root[data-bg='bg-mesh2'] .bg-slate-50\/80 { background: rgba(255,255,255,0.78) !important; backdrop-filter: blur(6px); }
+
+/* ── Dark Geometric ── */
+:root[data-bg='bg-geo1'] .theme-bg {
+  background-color: #0f172a;
+  background-image:
+    linear-gradient(rgba(99,102,241,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,102,241,0.08) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+:root[data-bg='bg-geo1'] .theme-bg header { background: rgba(15,23,42,0.90) !important; backdrop-filter: blur(12px); border-color: rgba(99,102,241,0.2) !important; }
+:root[data-bg='bg-geo1'] .bg-white { background: rgba(30,41,59,0.95) !important; backdrop-filter: blur(8px); }
+:root[data-bg='bg-geo1'] .bg-slate-50,
+:root[data-bg='bg-geo1'] .bg-slate-50\/80 { background: rgba(15,23,42,0.85) !important; backdrop-filter: blur(6px); }
+:root[data-bg='bg-geo1'] .text-slate-900,
+:root[data-bg='bg-geo1'] .text-slate-800 { color: hsl(210 40% 92%) !important; }
+:root[data-bg='bg-geo1'] .text-slate-700,
+:root[data-bg='bg-geo1'] .text-slate-600 { color: hsl(215 25% 72%) !important; }
+:root[data-bg='bg-geo1'] .text-slate-500,
+:root[data-bg='bg-geo1'] .text-slate-400 { color: hsl(215 20% 55%) !important; }
+:root[data-bg='bg-geo1'] .border-slate-100,
+:root[data-bg='bg-geo1'] .border-slate-200 { border-color: rgba(99,102,241,0.2) !important; }
+
+/* ── Light Dots ── */
+:root[data-bg='bg-geo2'] .theme-bg {
+  background-color: #f8fafc;
+  background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+:root[data-bg='bg-geo2'] .theme-bg header { background: rgba(248,250,252,0.90) !important; backdrop-filter: blur(12px); }
+:root[data-bg='bg-geo2'] .bg-white { background: rgba(255,255,255,0.95) !important; }
+:root[data-bg='bg-geo2'] .bg-slate-50,
+:root[data-bg='bg-geo2'] .bg-slate-50\/80 { background: rgba(248,250,252,0.88) !important; }
+
+/* ── Glass Morphism ── */
+:root[data-bg='bg-glass'] .theme-bg {
+  background: linear-gradient(135deg, #667eea22 0%, #764ba222 25%, #f093fb22 50%, #f5576c22 75%, #fda08522 100%);
+  background-color: #f0f4ff;
+}
+:root[data-bg='bg-glass'] .theme-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(102,126,234,0.25) 0%, transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(240,147,251,0.25) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(245,87,108,0.15) 0%, transparent 50%);
+  pointer-events: none;
+}
+:root[data-bg='bg-glass'] .theme-bg header { background: rgba(255,255,255,0.60) !important; backdrop-filter: blur(20px); border-color: rgba(255,255,255,0.5) !important; box-shadow: 0 1px 0 rgba(255,255,255,0.6); }
+:root[data-bg='bg-glass'] .bg-white { background: rgba(255,255,255,0.70) !important; backdrop-filter: blur(16px); border-color: rgba(255,255,255,0.5) !important; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+:root[data-bg='bg-glass'] .bg-slate-50,
+:root[data-bg='bg-glass'] .bg-slate-50\/80 { background: rgba(255,255,255,0.50) !important; backdrop-filter: blur(12px); }
+:root[data-bg='bg-glass'] .border-slate-100,
+:root[data-bg='bg-glass'] .border-slate-200 { border-color: rgba(255,255,255,0.55) !important; }
+
+/* Sidebar glass effect for bg themes */
+:root[data-bg='bg-gradient1'] aside,
+:root[data-bg='bg-gradient2'] aside,
+:root[data-bg='bg-gradient3'] aside,
+:root[data-bg='bg-gradient4'] aside,
+:root[data-bg='bg-mesh1'] aside,
+:root[data-bg='bg-mesh2'] aside,
+:root[data-bg='bg-glass'] aside {
+  background: rgba(255,255,255,0.88) !important;
+  backdrop-filter: blur(16px);
+  border-color: rgba(255,255,255,0.3) !important;
+}
+:root[data-bg='bg-geo1'] aside {
+  background: rgba(15,23,42,0.92) !important;
+  backdrop-filter: blur(16px);
+  border-color: rgba(99,102,241,0.2) !important;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════
+   IMAGE BACKGROUNDS  (Unsplash CDN — free, no attribution required for UI)
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Shared overlay for all image backgrounds — cards stay readable */
+:root[data-bg^='bg-img'] .bg-white {
+  background: rgba(255,255,255,0.91) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+:root[data-bg^='bg-img'] .bg-slate-50,
+:root[data-bg^='bg-img'] .bg-slate-50\/80,
+:root[data-bg^='bg-img'] .bg-slate-50\/60 {
+  background: rgba(255,255,255,0.78) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+:root[data-bg^='bg-img'] aside {
+  background: rgba(255,255,255,0.90) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: rgba(255,255,255,0.35) !important;
+}
+:root[data-bg^='bg-img'] header {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: rgba(255,255,255,0.25) !important;
+}
+
+/* ── 🌆 City Skyline ── */
+/* Photo: Unsplash — city at night */
+:root[data-bg='bg-img-city'] .theme-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(10,15,30,0.55) 0%, rgba(10,15,30,0.35) 100%),
+    url('https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=1920&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-bg='bg-img-city'] header {
+  background: rgba(10,15,30,0.75) !important;
+}
+:root[data-bg='bg-img-city'] aside {
+  background: rgba(15,20,40,0.88) !important;
+}
+:root[data-bg='bg-img-city'] .text-slate-900,
+:root[data-bg='bg-img-city'] .text-slate-800 { color: hsl(220 30% 15%) !important; }
+
+/* ── 🏔️ Mountain Peak ── */
+/* Photo: Unsplash — mountain landscape */
+:root[data-bg='bg-img-mountain'] .theme-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(15,30,60,0.45) 0%, rgba(15,30,60,0.25) 100%),
+    url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-bg='bg-img-mountain'] header {
+  background: rgba(15,30,60,0.72) !important;
+}
+:root[data-bg='bg-img-mountain'] aside {
+  background: rgba(20,35,70,0.88) !important;
+}
+
+/* ── 🏢 Modern Office ── */
+/* Photo: Unsplash — modern workspace */
+:root[data-bg='bg-img-office'] .theme-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(240,245,255,0.30) 0%, rgba(240,245,255,0.15) 100%),
+    url('https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-bg='bg-img-office'] header {
+  background: rgba(240,245,255,0.82) !important;
+}
+:root[data-bg='bg-img-office'] aside {
+  background: rgba(245,248,255,0.92) !important;
+}
+
+/* ── 🎨 Abstract Art ── */
+/* Photo: Unsplash — colorful abstract */
+:root[data-bg='bg-img-abstract'] .theme-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(80,20,120,0.40) 0%, rgba(20,10,60,0.30) 100%),
+    url('https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=1920&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-bg='bg-img-abstract'] header {
+  background: rgba(80,20,120,0.72) !important;
+}
+:root[data-bg='bg-img-abstract'] aside {
+  background: rgba(60,15,100,0.88) !important;
+}
+
+/* ── 🌿 Nature Forest ── */
+/* Photo: Unsplash — green forest */
+:root[data-bg='bg-img-nature'] .theme-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(10,40,20,0.40) 0%, rgba(10,40,20,0.20) 100%),
+    url('https://images.unsplash.com/photo-1448375240586-882707db888b?w=1920&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-bg='bg-img-nature'] header {
+  background: rgba(10,50,25,0.75) !important;
+}
+:root[data-bg='bg-img-nature'] aside {
+  background: rgba(12,45,22,0.90) !important;
+}
+
+/* ── 💻 Tech Circuit ── */
+/* Photo: Unsplash — circuit board / tech */
+:root[data-bg='bg-img-tech'] .theme-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(10,15,50,0.60) 0%, rgba(10,15,50,0.40) 100%),
+    url('https://images.unsplash.com/photo-1518770660439-4636190af475?w=1920&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-bg='bg-img-tech'] header {
+  background: rgba(10,15,50,0.80) !important;
+}
+:root[data-bg='bg-img-tech'] aside {
+  background: rgba(8,12,45,0.92) !important;
+}
+:root[data-bg='bg-img-tech'] .text-slate-900,
+:root[data-bg='bg-img-tech'] .text-slate-800 { color: hsl(220 30% 15%) !important; }
+
+/* ── 🌊 Ocean Waves ── */
+/* Photo: Unsplash — ocean aerial */
+:root[data-bg='bg-img-ocean'] .theme-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(0,60,120,0.40) 0%, rgba(0,40,90,0.25) 100%),
+    url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=1920&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-bg='bg-img-ocean'] header {
+  background: rgba(0,60,120,0.75) !important;
+}
+:root[data-bg='bg-img-ocean'] aside {
+  background: rgba(0,50,100,0.90) !important;
+}
+
+/* ── 🌌 Deep Space ── */
+/* Photo: Unsplash — galaxy / stars */
+:root[data-bg='bg-img-space'] .theme-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(5,5,20,0.55) 0%, rgba(5,5,20,0.35) 100%),
+    url('https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=1920&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-bg='bg-img-space'] header {
+  background: rgba(5,5,25,0.82) !important;
+}
+:root[data-bg='bg-img-space'] aside {
+  background: rgba(5,5,20,0.92) !important;
+}
+:root[data-bg='bg-img-space'] .text-slate-900,
+:root[data-bg='bg-img-space'] .text-slate-800 { color: hsl(220 20% 15%) !important; }
+:root[data-bg='bg-img-space'] .bg-white {
+  background: rgba(15,15,40,0.88) !important;
+}
+:root[data-bg='bg-img-space'] .text-slate-700,
+:root[data-bg='bg-img-space'] .text-slate-600 { color: hsl(220 15% 70%) !important; }
+
+/* ── ✦ Minimal Lines ── */
+/* Photo: Unsplash — minimal architecture */
+:root[data-bg='bg-img-minimal'] .theme-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(245,247,250,0.25) 0%, rgba(245,247,250,0.10) 100%),
+    url('https://images.unsplash.com/photo-1486325212027-8081e485255e?w=1920&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-bg='bg-img-minimal'] header {
+  background: rgba(245,247,250,0.88) !important;
+}
+:root[data-bg='bg-img-minimal'] aside {
+  background: rgba(248,250,252,0.94) !important;
+}
+
+/* ── 🖤 Dark Luxury ── */
+/* Photo: Unsplash — dark marble / luxury */
+:root[data-bg='bg-img-dark'] .theme-bg {
+  background-image:
+    linear-gradient(to bottom, rgba(10,10,15,0.60) 0%, rgba(10,10,15,0.40) 100%),
+    url('https://images.unsplash.com/photo-1557683316-973673baf926?w=1920&q=80&auto=format&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+:root[data-bg='bg-img-dark'] header {
+  background: rgba(10,10,18,0.85) !important;
+}
+:root[data-bg='bg-img-dark'] aside {
+  background: rgba(8,8,15,0.93) !important;
+}
+:root[data-bg='bg-img-dark'] .bg-white {
+  background: rgba(20,20,30,0.90) !important;
+}
+:root[data-bg='bg-img-dark'] .text-slate-900,
+:root[data-bg='bg-img-dark'] .text-slate-800 { color: hsl(220 20% 90%) !important; }
+:root[data-bg='bg-img-dark'] .text-slate-700,
+:root[data-bg='bg-img-dark'] .text-slate-600 { color: hsl(220 15% 70%) !important; }
+:root[data-bg='bg-img-dark'] .text-slate-500,
+:root[data-bg='bg-img-dark'] .text-slate-400 { color: hsl(220 12% 55%) !important; }
+:root[data-bg='bg-img-dark'] .border-slate-100,
+:root[data-bg='bg-img-dark'] .border-slate-200 { border-color: rgba(255,255,255,0.10) !important; }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   USER TEXT COLOR  (--user-text CSS variable set by JS)
+   Jab user koi text color choose karta hai, --user-text set hota hai
+   aur ye sab text classes override kar deta hai
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* Only apply when --user-text is set (not "Auto") */
+:root[data-txt]:not([data-txt='txt-default']) .text-slate-900,
+:root[data-txt]:not([data-txt='txt-default']) .text-slate-800 {
+  color: var(--user-text) !important;
+}
+
+:root[data-txt]:not([data-txt='txt-default']) .text-slate-700,
+:root[data-txt]:not([data-txt='txt-default']) .text-slate-600 {
+  color: color-mix(in srgb, var(--user-text) 80%, transparent) !important;
+}
+
+:root[data-txt]:not([data-txt='txt-default']) .text-slate-500,
+:root[data-txt]:not([data-txt='txt-default']) .text-slate-400 {
+  color: color-mix(in srgb, var(--user-text) 55%, transparent) !important;
+}
+
+:root[data-txt]:not([data-txt='txt-default']) .text-slate-300 {
+  color: color-mix(in srgb, var(--user-text) 35%, transparent) !important;
+}
+
+/* Headings & bold labels */
+:root[data-txt]:not([data-txt='txt-default']) h1,
+:root[data-txt]:not([data-txt='txt-default']) h2,
+:root[data-txt]:not([data-txt='txt-default']) h3,
+:root[data-txt]:not([data-txt='txt-default']) h4 {
+  color: var(--user-text) !important;
+}
+
+/* Table cells */
+:root[data-txt]:not([data-txt='txt-default']) td,
+:root[data-txt]:not([data-txt='txt-default']) th {
+  color: var(--user-text) !important;
+}
+
+/* Paragraph text */
+:root[data-txt]:not([data-txt='txt-default']) p {
+  color: color-mix(in srgb, var(--user-text) 85%, transparent) !important;
+}
+
+/* Labels & spans */
+:root[data-txt]:not([data-txt='txt-default']) label,
+:root[data-txt]:not([data-txt='txt-default']) span:not(.badge-exempt) {
+  color: inherit;
+}
+
+/* Input text */
+:root[data-txt]:not([data-txt='txt-default']) input,
+:root[data-txt]:not([data-txt='txt-default']) select,
+:root[data-txt]:not([data-txt='txt-default']) textarea {
+  color: var(--user-text) !important;
+}
+
+/* Sidebar nav links */
+:root[data-txt]:not([data-txt='txt-default']) nav a:not(.active-nav) {
+  color: color-mix(in srgb, var(--user-text) 75%, transparent) !important;
+}
+
+/* Fallback for browsers without color-mix (older browsers) */
+@supports not (color: color-mix(in srgb, red 50%, blue)) {
+  :root[data-txt]:not([data-txt='txt-default']) .text-slate-700,
+  :root[data-txt]:not([data-txt='txt-default']) .text-slate-600 {
+    color: var(--user-text) !important;
+    opacity: 0.8;
+  }
+  :root[data-txt]:not([data-txt='txt-default']) .text-slate-500,
+  :root[data-txt]:not([data-txt='txt-default']) .text-slate-400 {
+    color: var(--user-text) !important;
+    opacity: 0.6;
+  }
 }

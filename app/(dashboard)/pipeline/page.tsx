@@ -1,4 +1,6 @@
 import { requireUser } from "@/lib/auth";
+import { can } from "@/config/rbac";
+import { redirect } from "next/navigation";
 import { connectDB } from "@/lib/db";
 import { Pipeline, Lead, User, Campaign } from "@/models";
 import { Button } from "@/components/ui/button";
@@ -12,11 +14,17 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import type { Role } from "@/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function PipelinePage() {
   const user = await requireUser();
+
+  // Only roles with leads.view.all or leads.view.team can access pipeline
+  if (!can(user.role as Role, "leads.view.all") && !can(user.role as Role, "leads.view.team")) {
+    redirect("/dashboard");
+  }
   await connectDB();
 
   const pipelines = await Pipeline.find({ active: true }).sort({ createdAt: -1 });

@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requirePermission } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import { University } from "@/models";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import { deleteUniversity } from "@/actions/universities";
 import { UniversityForm } from "@/components/universities/UniversityForm";
 
 export default async function UniversitiesPage() {
-  await requireUser();
+  await requirePermission("universities.manage");
   await connectDB();
   const universities = await University.find({ active: true }).sort({ name: 1 });
 

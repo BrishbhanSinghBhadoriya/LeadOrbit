@@ -14,7 +14,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       <BreakAlertProvider>
         <div className="flex h-screen overflow-hidden bg-slate-50/80">
           <Sidebar role={user.role} user={user} />
-          <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0">
+          <div className="flex-1 flex flex-col h-full overflow-hidden min-w-0 theme-bg">
             <Topbar user={user} />
             {/* px-4 on mobile (hamburger takes ~40px on left, handled in page), md:px-6 on desktop */}
             <main className="flex-1 overflow-y-auto p-4 md:p-6">

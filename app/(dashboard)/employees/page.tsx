@@ -1,4 +1,6 @@
 import { requireUser, canCreateRole } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { can } from "@/config/rbac";
 import { connectDB } from "@/lib/db";
 import { User } from "@/models";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,14 +12,22 @@ import type { Role } from "@/types";
 
 export default async function EmployeesPage() {
   const currentUser = await requireUser();
+
+  // Only roles with users.view.all or users.view.team can access
+  if (!can(currentUser.role as Role, "users.view.all") && !can(currentUser.role as Role, "users.view.team")) {
+    redirect("/dashboard");
+  }
+
   await connectDB();
   
-  // Get users managed by current user or all if super_admin/hr
-  let users = [];
-  if (["super_admin", "hr", "admin"].includes(currentUser.role)) {
-    users = await User.find().sort({ createdAt: -1 });
+  // Get users based on role
+  let users: any[] = [];
+  if (can(currentUser.role as Role, "users.view.all")) {
+    // super_admin, admin, general_manager, hr — see everyone
+    users = await User.find().sort({ name: 1 });
   } else {
-    users = await User.find({ managerId: currentUser.sub }).sort({ createdAt: -1 });
+    // manager, team_leader — see only their direct reports
+    users = await User.find({ managerId: currentUser.sub }).sort({ name: 1 });
   }
 
   async function addUser(formData: FormData) {

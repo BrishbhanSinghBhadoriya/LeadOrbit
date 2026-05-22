@@ -1,11 +1,14 @@
 import { connectDB } from "@/lib/db";
 import { WhatsAppTemplate } from "@/models";
 import { requireUser } from "@/lib/auth";
+import { can } from "@/config/rbac";
+import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import type { Role } from "@/types";
 
 const TYPE_LABELS: Record<string, string> = {
   admission_followup: "Admission Follow-up",
@@ -17,7 +20,11 @@ const TYPE_LABELS: Record<string, string> = {
 };
 
 export default async function TemplatesPage() {
-  await requireUser();
+  const user = await requireUser();
+  // IT and HR don't need templates — only lead-handling roles
+  if (!can(user.role as Role, "leads.view.all") && !can(user.role as Role, "leads.view.team") && !can(user.role as Role, "leads.view.own")) {
+    redirect("/dashboard");
+  }
   await connectDB();
   const templates = await WhatsAppTemplate.find({ active: true }).sort({ updatedAt: -1 });
 

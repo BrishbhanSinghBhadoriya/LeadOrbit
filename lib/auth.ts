@@ -34,11 +34,18 @@ export async function requirePermission(p: Permission): Promise<JwtPayload> {
 }
 
 export function canCreateRole(creatorRole: Role, targetRole: Role): boolean {
-  if (creatorRole === "super_admin") {
-    return ["admin", "general_manager"].includes(targetRole);
+  switch (creatorRole) {
+    case "super_admin":
+      return ["admin", "general_manager"].includes(targetRole);
+    case "admin":
+      return ["general_manager", "manager", "team_leader", "counselor", "it", "hr"].includes(targetRole);
+    case "general_manager":
+      return ["manager", "team_leader", "counselor", "it", "hr"].includes(targetRole);
+    case "manager":
+      return ["team_leader", "counselor"].includes(targetRole);
+    case "team_leader":
+      return ["counselor"].includes(targetRole);
+    default:
+      return false;
   }
-  if (creatorRole === "general_manager") {
-    return ["manager", "team_leader", "counselor", "it", "hr"].includes(targetRole);
-  }
-  return false;
 }

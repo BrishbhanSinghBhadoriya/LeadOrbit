@@ -1,4 +1,4 @@
-import { requireUser } from "@/lib/auth";
+import { requirePermission } from "@/lib/auth";
 import { connectDB } from "@/lib/db";
 import { Course, University } from "@/models";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -13,7 +13,7 @@ export default async function CoursesPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
-  await requireUser();
+  await requirePermission("courses.manage");
   await connectDB();
   
   const sp = await searchParams;

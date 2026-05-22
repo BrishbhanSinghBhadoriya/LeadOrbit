@@ -93,7 +93,7 @@ export default async function DashboardPage() {
       <LeadsByStageCard data={stageStats} />
 
       {/* ── Row 3: Quick Access ── */}
-      <QuickAccessCard />
+      <QuickAccessCard role={user.role} />
 
       {/* ── Row 4: Recent Leads + Follow-ups ── */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

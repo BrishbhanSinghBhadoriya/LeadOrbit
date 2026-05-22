@@ -24,16 +24,16 @@ const NAV: NavItem[] = [
   { href: "/leads",         label: "Leads",           icon: Users,           roles: "all" },
   { href: "/followups",     label: "Follow-ups",      icon: CalendarClock,   roles: "all" },
   { href: "/campaigns",     label: "Campaigns",       icon: Megaphone,       roles: ["super_admin","admin","general_manager","manager","team_leader"] },
-  { href: "/reports",       label: "Reports",         icon: BarChart3,       roles: ["super_admin","admin","general_manager","manager","team_leader","hr"] },
-  { href: "/whatsapp",      label: "WhatsApp",        icon: MessageCircle,   roles: "all" },
-  { href: "/templates",     label: "Templates",       icon: FileText,        roles: "all" },
+  { href: "/reports",       label: "Reports",         icon: BarChart3,       roles: ["super_admin","admin","general_manager","manager","team_leader","hr","it"] },
+  { href: "/whatsapp",      label: "WhatsApp",        icon: MessageCircle,   roles: ["super_admin","admin","general_manager","manager","team_leader","counselor"] },
+  { href: "/templates",     label: "Templates",       icon: FileText,        roles: ["super_admin","admin","general_manager","manager","team_leader","counselor"] },
   { href: "/attendance",    label: "Attendance",      icon: ClipboardList,   roles: "all" },
   { href: "/notifications", label: "Notifications",   icon: Bell,            roles: "all" },
-  { href: "/employees",     label: "User Management", icon: UserCog,         roles: ["super_admin","general_manager","hr","admin"] },
+  { href: "/employees",     label: "User Management", icon: UserCog,         roles: ["super_admin","general_manager","hr","admin","manager","team_leader"] },
   { href: "/pipeline",      label: "Pipeline",        icon: Kanban,          roles: ["super_admin","admin","general_manager","manager","team_leader"] },
   { href: "/universities",  label: "Universities",    icon: GraduationCap,   roles: ["super_admin","admin","general_manager","it"] },
   { href: "/courses",       label: "Courses",         icon: BookOpen,        roles: ["super_admin","admin","general_manager","it"] },
-  { href: "/settings",      label: "Settings",        icon: Settings,        roles: ["super_admin","admin","it","general_manager"] },
+  { href: "/settings",      label: "Settings",        icon: Settings,        roles: "all" },
 ];
 
 const MAIN_HREFS = ["/dashboard","/leads","/followups","/campaigns","/reports","/whatsapp","/templates","/attendance","/notifications","/employees"];
