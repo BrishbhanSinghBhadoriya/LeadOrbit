@@ -4,6 +4,16 @@ import { Lead } from "@/models";
 import { leadSchema } from "@/lib/validators";
 import { emitToRoom } from "@/lib/socket-emit";
 
+export async function OPTIONS() {
+  return NextResponse.json({}, {
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -39,13 +49,23 @@ export async function POST(req: Request) {
       success: true, 
       message: "Lead submitted successfully",
       id: lead._id 
-    }, { status: 201 });
+    }, { 
+      status: 201,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      }
+    });
 
   } catch (error: any) {
     console.error("Public lead submission error:", error);
     return NextResponse.json({ 
       success: false, 
       message: error.message || "Failed to submit lead" 
-    }, { status: 400 });
+    }, { 
+      status: 400,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+      }
+    });
   }
 }

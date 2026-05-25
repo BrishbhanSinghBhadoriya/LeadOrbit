@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   const leadId = String(form.get("leadId") ?? "");
   const type = String(form.get("type") ?? "other");
   if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
-  if (file.size > 10 * 1024 * 1024) return NextResponse.json({ error: "Too large" }, { status: 413 });
+  if (file.size > 5 * 1024 * 1024) return NextResponse.json({ error: "Too large. Max limit is 5MB" }, { status: 413 });
 
   const buffer = Buffer.from(await file.arrayBuffer());
   const { url, publicId } = await uploadToCloudinary(buffer, `edu-crm/leads/${leadId}`);

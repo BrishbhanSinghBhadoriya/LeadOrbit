@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Plus, Loader2, X, FileText, Upload, Trash2, Edit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,9 +17,11 @@ interface CourseFormProps {
 }
 
 export function CourseForm({ course, universities, onSuccess }: CourseFormProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [brochureUrl, setBrochureUrl] = useState(course?.brochureUrl || "");
   const [mounted, setMounted] = useState(false);
 
@@ -26,6 +29,7 @@ export function CourseForm({ course, universities, onSuccess }: CourseFormProps)
     setMounted(true);
     if (open) {
       document.body.style.overflow = "hidden";
+      setError(null);
     } else {
       document.body.style.overflow = "unset";
     }
@@ -38,14 +42,22 @@ export function CourseForm({ course, universities, onSuccess }: CourseFormProps)
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Check file size (e.g., 5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File size too large. Maximum limit is 5MB.");
+      return;
+    }
+
     setUploading(true);
+    setError(null);
     try {
       const formData = new FormData();
       formData.append("file", file);
       const url = await uploadFile(formData);
       setBrochureUrl(url);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Upload failed", err);
+      setError(err.message || "Upload failed. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -53,6 +65,7 @@ export function CourseForm({ course, universities, onSuccess }: CourseFormProps)
 
   async function handleSubmit(formData: FormData) {
     setLoading(true);
+    setError(null);
     try {
       const data = {
         name: formData.get("name") as string,
@@ -70,10 +83,12 @@ export function CourseForm({ course, universities, onSuccess }: CourseFormProps)
       } else {
         await createCourse(data);
       }
+      router.refresh();
       setOpen(false);
       onSuccess?.();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to save course", err);
+      setError(err.message || "Failed to save course. Please check all fields.");
     } finally {
       setLoading(false);
     }
@@ -120,6 +135,13 @@ export function CourseForm({ course, universities, onSuccess }: CourseFormProps)
             
             {/* Form Content */}
             <form action={handleSubmit} className="p-8 md:p-10 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm font-bold animate-in fade-in slide-in-from-top-2">
+                  <X className="h-5 w-5 shrink-0" />
+                  {error}
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="md:col-span-2 space-y-2">
                   <label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Affiliated University</label>
@@ -175,29 +197,59 @@ export function CourseForm({ course, universities, onSuccess }: CourseFormProps)
                 </div>
 
                 <div className="md:col-span-2 space-y-4">
-                  <label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Marketing Assets (PDF)</label>
-                  <div className="flex flex-col md:flex-row items-center gap-8 p-6 rounded-[2rem] bg-orange-50/50 border-2 border-dashed border-orange-200 hover:border-orange-400 transition-colors group">
-                    <div className="h-20 w-20 rounded-2xl bg-white shadow-lg flex items-center justify-center shrink-0 group-hover:rotate-12 transition-transform">
-                      <FileText className={`h-10 w-10 ${brochureUrl ? "text-orange-600" : "text-orange-200"}`} />
-                    </div>
-                    <div className="flex-1 space-y-3 w-full text-center md:text-left">
-                      <div className="relative">
-                        <Input 
-                          type="file" 
-                          accept="application/pdf" 
-                          onChange={handleFileUpload} 
-                          className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                        />
-                        <Button type="button" variant="outline" className="w-full h-12 rounded-xl border-orange-200 text-orange-700 font-bold hover:bg-orange-100 transition-colors">
-                          {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                          {brochureUrl ? "Replace Brochure" : "Upload Brochure"}
-                        </Button>
+                  <div className="flex justify-between items-end ml-1">
+                    <label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em]">Marketing Assets (PDF)</label>
+                    <p className="text-[10px] text-slate-400 font-bold italic">Upload or paste URL</p>
+                  </div>
+                  
+                  <div className="space-y-4 p-6 rounded-[2rem] bg-orange-50/50 border-2 border-dashed border-orange-200 hover:border-orange-400 transition-colors group">
+                    <div className="flex flex-col md:flex-row items-center gap-8">
+                      <div className="h-20 w-20 rounded-2xl bg-white shadow-lg flex items-center justify-center shrink-0 group-hover:rotate-12 transition-transform">
+                        <FileText className={`h-10 w-10 ${brochureUrl ? "text-orange-600" : "text-orange-200"}`} />
                       </div>
-                      {brochureUrl && (
-                        <p className="text-[11px] text-green-600 font-black uppercase tracking-widest flex items-center justify-center md:justify-start gap-2">
-                          <Plus className="h-3 w-3 bg-green-500 text-white rounded-full p-0.5" /> File Ready
-                        </p>
-                      )}
+                      <div className="flex-1 space-y-3 w-full text-center md:text-left">
+                        <div className="relative">
+                          <Input 
+                            type="file" 
+                            accept="application/pdf" 
+                            onChange={handleFileUpload} 
+                            className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                          />
+                          <Button type="button" variant="outline" className="w-full h-12 rounded-xl border-orange-200 text-orange-700 font-bold hover:bg-orange-100 transition-colors">
+                            {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                            {brochureUrl ? "Replace File" : "Upload Brochure"}
+                          </Button>
+                        </div>
+                        
+                        <div className="relative">
+                          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <span className="text-orange-300 text-[10px] font-bold">URL</span>
+                          </div>
+                          <Input 
+                            value={brochureUrl}
+                            onChange={(e) => setBrochureUrl(e.target.value)}
+                            placeholder="Or paste Cloudinary/External PDF URL here..."
+                            className="h-10 pl-10 rounded-xl border-orange-100 bg-white/50 text-xs font-medium focus:ring-orange-200"
+                          />
+                        </div>
+
+                        {brochureUrl && (
+                          <div className="flex flex-col md:flex-row items-center gap-4">
+                            <p className="text-[11px] text-green-600 font-black uppercase tracking-widest flex items-center justify-center md:justify-start gap-2">
+                              <Plus className="h-3 w-3 bg-green-500 text-white rounded-full p-0.5" /> {brochureUrl.startsWith('http') ? 'URL Linked' : 'File Ready'}
+                            </p>
+                            <Button 
+                              type="button" 
+                              variant="ghost" 
+                              size="sm" 
+                              onClick={() => setBrochureUrl("")}
+                              className="text-[10px] font-black uppercase text-red-500 hover:text-red-600 hover:bg-red-50 p-0 h-auto"
+                            >
+                              <Trash2 className="h-3 w-3 mr-1" /> Remove
+                            </Button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>

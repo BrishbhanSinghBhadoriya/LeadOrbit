@@ -18,6 +18,7 @@ export function UniversityForm({ university, onSuccess }: UniversityFormProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState(university?.logoUrl || "");
   const [mounted, setMounted] = useState(false);
 
@@ -25,6 +26,7 @@ export function UniversityForm({ university, onSuccess }: UniversityFormProps) {
     setMounted(true);
     if (open) {
       document.body.style.overflow = "hidden";
+      setError(null);
     } else {
       document.body.style.overflow = "unset";
     }
@@ -37,14 +39,21 @@ export function UniversityForm({ university, onSuccess }: UniversityFormProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (file.size > 5 * 1024 * 1024) {
+      setError("File size too large. Maximum limit is 5MB.");
+      return;
+    }
+
     setUploading(true);
+    setError(null);
     try {
       const formData = new FormData();
       formData.append("file", file);
       const url = await uploadFile(formData);
       setLogoUrl(url);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Upload failed", err);
+      setError(err.message || "Upload failed. Please try again.");
     } finally {
       setUploading(false);
     }
@@ -52,6 +61,7 @@ export function UniversityForm({ university, onSuccess }: UniversityFormProps) {
 
   async function handleSubmit(formData: FormData) {
     setLoading(true);
+    setError(null);
     try {
       const data = {
         name: formData.get("name") as string,
@@ -70,8 +80,9 @@ export function UniversityForm({ university, onSuccess }: UniversityFormProps) {
       }
       setOpen(false);
       onSuccess?.();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to save university", err);
+      setError(err.message || "Failed to save university. Please check all fields.");
     } finally {
       setLoading(false);
     }
@@ -118,6 +129,12 @@ export function UniversityForm({ university, onSuccess }: UniversityFormProps) {
             
             {/* Form Content */}
             <form action={handleSubmit} className="p-8 md:p-10 space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-3 text-red-600 text-sm font-bold animate-in fade-in slide-in-from-top-2">
+                  <X className="h-5 w-5 shrink-0" />
+                  {error}
+                </div>
+              )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2 md:col-span-2">
                   <label className="text-[11px] font-black uppercase text-slate-400 tracking-[0.2em] ml-1">Full University Name</label>
